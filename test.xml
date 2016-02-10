@@ -1,0 +1,20 @@
+<data>
+	<device name="television">
+		<state name="on">50</state>
+		<state name="off">0</state>
+		<state name="standby">15</state>
+	</device>
+	<device name="xbox">
+		<state name="on">20</state>
+		<state name="off">0</state>
+		<state name="standby">11</state>
+		<state name="menu">15</state>
+		<state name="game">33</state>
+	</device>
+	<device name="surround sound">
+		<state name="on">20</state>
+		<state name="off">0</state>
+		<state name="standby">4</state>
+		<state name="mute">7</state>
+	</device>
+</data>
