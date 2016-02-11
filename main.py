@@ -44,7 +44,7 @@ def main():
         input_at_interval(input_generators, num_periods_interval)
         
     with open('test_input_manual.csv', 'w') as outfile:
-        to_write = ''
+        to_write = 'sample_rate:{}\n'.format(integration_period)
         for input_generator in input_generators:
             to_write += input_generator.generate_str()
         outfile.write(to_write)

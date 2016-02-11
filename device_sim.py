@@ -66,13 +66,16 @@ def parse_inputfile(file, device_map)-> dict:
     
     with open(file, 'r') as i_file:
         for line in i_file:
-            info = line.rstrip().split(',')
-            device, state, i_string = info[0], info[1], info[2]
-            
-            if(not device in to_return):
-                to_return[device] = make_int_array(len(i_string))
-            
-            parse_inputstring(device, state, device_map, i_string, to_return[device])
+            if line[:11] == 'sample_rate':
+                pass
+            else:
+                info = line.rstrip().split(',')
+                device, state, i_string = info[0], info[1], info[2]
+                
+                if(not device in to_return):
+                    to_return[device] = make_int_array(len(i_string))
+                
+                parse_inputstring(device, state, device_map, i_string, to_return[device])
     
     return to_return
 
