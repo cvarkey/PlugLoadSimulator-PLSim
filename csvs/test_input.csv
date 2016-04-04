@@ -1,3 +1,4 @@
+sample_rate:1800
 xbox,off,0001100000
 xbox,standby,1110000000
 xbox,on,0000001111
