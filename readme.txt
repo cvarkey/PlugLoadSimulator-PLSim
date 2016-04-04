@@ -27,7 +27,8 @@ INSTALLATION DETAILS
   		ie: C:\Users\[user_name]\Miniconda3\python.exe
   	(c) A new screen will pop up check mark all the radio boxes and click OK
   	
-(6) Create a new Project and put in all the files
+(6) Create a new Project and put in all the files assuming you have them all in a zip
+(7) Alternatively fork on Github @ https://github.com/ksegarra/CalPlug-Power-Usage-Sim
 
 
   	
