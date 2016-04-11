@@ -22,12 +22,28 @@ def write_to_ifile(file_name: str, integration_period:int, input_generators: lis
         outfile.write(to_write)
         
 def make_integral_array(power_array: list, integration_period: int):
+    '''
+    creates the array that represents the energy at each integration period
+    
+    can be thought of as a signal f[x] where the gaps interval between each
+    x is the integration period.
+    '''
     to_return = [0]
     for i in range(len(power_array)-1):
         to_return.append(energy_used(power_array[i:i+2], integration_period) + to_return[-1])
     return to_return
 
 def write_to_csv(file_name, power_array: list, integral_array: list, integration_time):
+    '''
+    writes the graphs data onto a csv file with the following format
+    
+    time,power,energy
+    0,0,0
+    x,y,z
+    . . .
+    . . .
+    . . .
+    '''
     time_array = list(range(0, len(power_array)*integration_time, integration_time))
     with open(file_name, 'w+', newline='') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',',
@@ -42,6 +58,15 @@ def write_to_csv(file_name, power_array: list, integral_array: list, integration
         csv_file.close()
         
 def analyze_data(file_name: str, integration_period: int, device_map: dict):
+    '''    
+    a function that takes it all together, takes the csv file and from it makes all the necessary
+    calculations.
+    
+        + calculates the power
+        + graphs the power vs the time
+        + graphs the energy used vs time
+        + writes the graphs onto csvs
+    '''
     power_map = parse_inputfile(file_name, device_map)
     power_matrix = list(power_map.values())       
     power_array = flatten_cols(power_matrix)

@@ -2,6 +2,8 @@
     class Device has 2 fields. a name and a map representing states and how much
     power they use. XML files follows this template:
     
+    it specifically parses through AV devices
+    
         <device = name>
             [<state: name, power>
             <\state>]
