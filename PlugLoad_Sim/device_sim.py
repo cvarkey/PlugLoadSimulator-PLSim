@@ -1,4 +1,4 @@
-from graph_data import make_graph,show_graph
+from PlugLoad_Sim.graph_data import make_graph,show_graph
 '''
 Simulates the device using a file that denotes whether a device is on or off at any given time with
 with intervals designated in a csv file that follows the format
@@ -75,7 +75,7 @@ def analyze_data(file_name: str, integration_period: int, device_map: dict):
     print('\nEnergy Used: ', integral_array[-1], 'Watt-hours')
     make_graph(power_array, integration_period,'', 'Power (W)', 'Power Consumed',sub=211)
     make_graph(integral_array, integration_period, 'Time (hr)', 'Energy (W*hr)', 'Energy Used',sub=212)
-    write_to_csv('outputs/graph_file.csv', power_array, integral_array, integration_period)
+    write_to_csv('../outputs/graph_file.csv', power_array, integral_array, integration_period)
     show_graph()
     
 def analyze_data_nograph(file_name: str, integration_period: int, device_map: dict):

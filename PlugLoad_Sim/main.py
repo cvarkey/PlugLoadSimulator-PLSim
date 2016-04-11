@@ -1,8 +1,8 @@
-from inputstr_generator import make_input_generators, NameGenerator
+from PlugLoad_Sim.inputstr_generator import make_input_generators, NameGenerator
 from goody import input_int, input_str
-from device_sim import write_to_ifile, analyze_data
+from PlugLoad_Sim.device_sim import write_to_ifile, analyze_data
 
-import device_parser
+import PlugLoad_Sim.device_parser as device_parser
 
 # TODO
 # -start setting up that way we can simulate multiple environments and make comparisons
@@ -93,7 +93,7 @@ def run_sim(integration_period: int, input_generators: list):
 def main():
     name_gen = NameGenerator()
     device_map = {}
-    tree = device_parser.parse_data('xmls/data_grouped.xml')
+    tree = device_parser.parse_data('../xmls/data_grouped.xml')
     devices_data = device_parser.parse_groupings(tree)
     
     while True:
@@ -116,8 +116,8 @@ def main():
             input_generators = make_input_generators(device_map)
             integration_period = input_int('Enter integration period: ')
             run_sim(integration_period, input_generators)
-            write_to_ifile('csvs/test_group.csv', integration_period, input_generators)
-            analyze_data('csvs/test_group.csv', integration_period, device_map)
+            write_to_ifile('../csvs/test_group.csv', integration_period, input_generators)
+            analyze_data('../csvs/test_group.csv', integration_period, device_map)
         print()
         if inp == 'q':
             return

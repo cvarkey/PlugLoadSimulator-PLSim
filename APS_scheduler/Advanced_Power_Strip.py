@@ -13,15 +13,28 @@ class AdvancedPowerStrip:
     (put a plaintxt diagram here)
     '''
     
-    def __init__(self, independent_devices: str, dependendent_devices: list, time_limit: int, is_on = False):
-        self._independent_device     = independent_devices
-        self._independent_device_on  =  is_on;
-        self._dependendent_devices   = dependendent_devices
-        self._time_limit             = time_limit
+    def __init__(self, master_devices: str, slave_devices: list, time_limit: int, is_on = False):
+        self._master_device     = master_devices
+        self._slave_devices     = slave_devices
+        self._time_limit        = time_limit
+        self._music_mode        = False
         
-    def turn_on_independent_device(self):
-        self._independent_device_on  = True
+        self._master_device_on  = is_on
+        self._slave_devices_on  = is_on
         
-    def turn_off_independent_device(self):
-        self._independent_device_off = False
+    def turn_on_master_device(self):
+        self._master_device_on  = True
+        self._slave_devices_on  = True
+        
+    def turn_off_master_device(self):
+        self._master_device_on  = False
+        
+        if(not self._music_mode):
+            self._slave_devices_on = True
+            
+    def turn_on_music_mode(self):
+        self._music_mode = True
+        
+    def turn_off_music_mode(self):
+        self._music_mode = False
     

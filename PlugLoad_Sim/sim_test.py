@@ -5,13 +5,13 @@ Created on Feb 18, 2016
 '''
 import unittest
 
-from randtest_input_generator import generate_test_input
-from inputstr_generator import InputGenerator
+from PlugLoad_Sim.randtest_input_generator import generate_test_input
+from PlugLoad_Sim.inputstr_generator import InputGenerator
 from goody import input_int
-from device_sim import write_to_ifile, analyze_data, analyze_data_nograph
+from PlugLoad_Sim.device_sim import write_to_ifile, analyze_data, analyze_data_nograph
 from stopwatch import Stopwatch
 
-import device_parser
+import PlugLoad_Sim.device_parser as device_parser
 from _collections import OrderedDict
 
 
@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
 def test_largescale():
     s = Stopwatch()
     integration_factor = 5
-    device_map = device_parser.build_device_map(device_parser.parse_data('test.xml'))
+    device_map = device_parser.build_device_map(device_parser.parse_data('../xmls/test.xml'))
     test_size = 10000
     histogram = OrderedDict()
     
@@ -59,7 +59,7 @@ def test_largescale():
         
             s.reset()
             s.start()
-            analyze_data_nograph('csvs/test_input1.csv', integration_factor, device_map)
+            analyze_data_nograph('../csvs/test_input1.csv', integration_factor, device_map)
             s.stop()
             print('Processing input of size {}:     '.format(test_size), s.read())
 
