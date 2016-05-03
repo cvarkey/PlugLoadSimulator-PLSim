@@ -26,9 +26,6 @@ class InputGenerator:
         return to_return
     
     def write_on_state(self, state: str, int_time: int):
-#         time_left = self._max_size - self._curr_time
-#         if int_time > time_left: # may throw error here idk yet
-#             int_time = time_left
         
         for key in self._dev_strdict.keys():
             if key == state:

@@ -4,6 +4,19 @@ Some functions that make life easier
 @author: Klint
 '''
 
+def input_str_with_nummap(prompt: str, choices: set):
+    '''
+    input_str with a mapping from numbers onto the choices, 
+    choices must not be null
+    '''
+    str_range = set(str(x) for x in range(1, len(choices)+1))
+    inp = input_str(prompt, valid=choices.union(str_range))
+    input_dict = dict(zip(range(1, len(choices)+1), choices))
+    
+    if not inp in choices:
+        inp = input_dict[int(inp)]
+    
+    return inp
 
 def input_str(prompt: str, valid = {})-> str:
     if len(valid) == 0:
