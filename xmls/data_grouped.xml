@@ -1,24 +1,5 @@
-<!--
-
-	class device -> device types      -> brands -> model
-					- tv				
-					- gaming console
-					- dvd player
-					
--->
 <data>
 <device-class name="AV">
-<!--
-	<device-type name="stb">
-		<device-brand name="DirecTV">
-			<device-model name="2011 DVR"> <!--directory containing several state excel files
-				<state name = "off" power="0"/>
-				<state name = "standby" power="20"/>
-				<state name = "record" power="151"/> <!-- this is one exce file
-			</device-model>
-		</device-brand>
-	</device-type>
-	-->
 	<device-type name="sound system">
 		<device-brand name="Panasonic">
 			<device-model name="Surround Sound">
