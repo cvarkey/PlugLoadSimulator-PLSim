@@ -10,6 +10,7 @@ from APS_scheduler.Advanced_Power_Strip import AdvancedPowerStripT2
 from PlugLoad_Sim.inputstr_generator import InputGenerator
 
 import PlugLoad_Sim.device_parser as device_parser
+from APS_scheduler.APS_State import APS2_State
  
  
 # bug list
@@ -63,10 +64,10 @@ def get_unbound_devices(ig_map: dict, aps):
     return set(filter(lambda x: not x in aps.slave_devices() and x != aps.master_device() and x != 'aps',
                              ig_map.keys()))
 
-def get_states(ig_map, devices: {str}, time_interval: int):
+def get_states(ig_map, devices: {str}):
     '''
     takes in a list of devices and asks user whether or not that device is being used
-    then writes onto the string generators the specified time interval
+    returns a map that specifies what state each device is in
     '''
     result = {}
     
@@ -81,114 +82,94 @@ def get_states(ig_map, devices: {str}, time_interval: int):
             input_dict = dict(zip(rlen, ig_map[d].states()))
             if not state in ig_map[d].states():
                 state = input_dict[int(state)]
-                
-            ig_map[d].write_on_state(state, time_interval)
             result[d] = state
         elif inp.lower() in ['no', 'n']:
-            ig_map[d].write_on_state(DEFAULT_STATE, time_interval)
             result[d] = DEFAULT_STATE
             
     return result
 
-def write_aps_states(master_device, master_state, slave_states, ig_map, n_periods):
-    ig_map[master_device].write_on_state(master_state, n_periods)
-    for k,v in slave_states.items():
-        ig_map[k].write_on_state(v, n_periods)
+def write_on_states(dev_state_map: {str}, ig_map, n_periods):
+    for dev, state in dev_state_map.items():
+        ig_map[dev].write_on_state(state, n_periods)
+        
+def ig_write_from_iterable(device, iterable, ig_map, current_state, save_state = OFF_STATE):
+    '''
+    writes onto the ig_map from an iterable containing states and times spent in each state
+    '''
+    for state, time in iterable:
+        if state != APS2_State.POWER_SAVE:
+            ig_map[device].write_on_state(current_state, time)
+        else:
+            ig_map[device].write_on_state(save_state, time)
+            
+def ig_write_dep_devices(dev_state: dict, ig_map, aps_state_times):
+    print(dev_state)
+    for device, state in dev_state.items():
+        ig_write_from_iterable(device, aps_state_times, ig_map, state)
 
-def input_at_interval(ig_map: ['InputGenerator'], time_info: tuple, unbound_devices: {str}, aps: AdvancedPowerStripT2):
+
+def input_unbound_devices(ig_map, unbound_devices: {str}, time: int):
+    dev_state = get_states(ig_map, unbound_devices)
+    write_on_states(dev_state, ig_map, time)
+
+def input_aps_devices(ig_map, aps, n_periods_IR, n_periods_move_IR, n_periods, int_period,start_state_time= None):
+    master_state = get_states(ig_map, {aps.master_device()})
+    
+    # APS T1
+    if master_state[aps.master_device()] == DEFAULT_STATE or master_state[aps.master_device()] == OFF_STATE:
+        write_on_states(master_state, ig_map, n_periods)
+        write_on_states(dict((dev, OFF_STATE) for dev in aps.slave_devices()), ig_map, n_periods)
+        return
+    
+    dep_dev_states = get_states(ig_map, aps.slave_devices())
+    # APS T2
+    if start_state_time == None:
+        apsState = APS2_State(aps, n_periods_IR, n_periods_move_IR, n_periods)
+    else:
+        apsState = APS2_State(aps, n_periods_IR, n_periods_move_IR, n_periods, 
+                              start_state=start_state_time[0], start_periods=start_state_time[1])
+
+    while(apsState.time_left() > 0):
+        if apsState.check_state() == APS2_State.IR:
+            ans = input_str('has there been IR in the last {}? '.format(aps.time_IR_only()))
+            if ans.lower() in {'y', 'yes'}:
+                time_sig    = input_int('How long ago?')
+                sig_periods = n_periods_IR - int(convert_time(time_sig, int_period))
+                apsState.input_signal(sig_periods)
+            else:
+                apsState.next_state()
+        elif apsState.check_state() == APS2_State.IR_AND_MOVE:
+            ans = input_str('has there been IR/movement in the last {}? '.format(aps.time_IR_and_movement()))
+            if ans.lower() in {'y', 'yes'}:
+                time_sig    = input_int('How long ago?')
+                sig_periods = n_periods_move_IR - int(convert_time(time_sig, int_period))
+                apsState.input_signal(sig_periods)
+            else:
+                apsState.next_state()
+        elif apsState.check_state() == APS2_State.POWER_SAVE:
+            apsState.next_state()
+    
+    state_times, carry_over = apsState.flush()
+    
+    ig_write_dep_devices(dep_dev_states, ig_map, state_times)
+    ig_write_from_iterable(aps.master_device(), state_times, ig_map, master_state[aps.master_device()], save_state=DEFAULT_STATE)
+    
+    return carry_over
+                
+def input_at_interval(ig_map: ['InputGenerator'], time_info: tuple, unbound_devices: {str}, aps: AdvancedPowerStripT2, start_state_time = None):
     '''helper function for running the simulation, at each time interval it asks whether or not the
     device is being used then uses the writes'''
     
     ### this function is a mess refactor it into several functions at some point
-    
     n_periods, n_periods_IR, n_periods_move_IR, int_period = time_info
-    current_period = min(n_periods_IR, n_periods)
     
-    master_device = aps.master_device()
-    slave_devices = aps.slave_devices()
+    ### inputting unbound devices is the same case as inputting devices from the PlugLoadSim
+    input_unbound_devices(ig_map, unbound_devices, n_periods)
     
-    # get states for the devices that are independent of the APS
-    get_states(ig_map, unbound_devices, n_periods)
-    
-    print('Enter the states for the master device: ')
-    master_info  = get_states(ig_map, {master_device}, current_period) # this causes the added sixty minutes bug
-    master_state = master_info[master_device]
-    slave_states = {}
-    
-    # CASE I: master is off APS turns off slave devices
-    if master_state == DEFAULT_STATE or master_state == OFF_STATE:
-        aps.turn_off_master_device()
-        ig_map[master_device].write_on_state(master_state, n_periods-current_period)
-        for d in slave_devices:
-            ig_map[d].write_on_state(OFF_STATE, n_periods)
-        return
-    else:
-        aps.turn_on_master_device()
-        if aps.slave_devices_on():
-            slave_states = get_states(ig_map, slave_devices, current_period)
-        
-    
-    # CASE II: master is ON triggers APS T2
-    n_periods_lastIR = 0
-    n_periods_lastMoveIR = 0
-    
-    slave_off = dict((k, OFF_STATE) for k in slave_devices)
-    
-    #
-    # everything from below this point will likely be refactored.
-    #
-    
-    while current_period < n_periods:
-        periods_left = n_periods - current_period
-        
-        if periods_left > n_periods_IR:
-            inp = input_str('In the last {} has there been any IR signal? '.format(aps.time_IR_only()), valid=YES_NO_INPUTS)
-            
-            if inp.lower() in {'y', 'Yes'}:
-                last_IR = input_int('How long ago was the last IR signal detected? ', 
-                                    valid=set(range(0, aps.time_IR_only())))
-                n_periods_lastIR = n_periods_IR - int(convert_time(last_IR, int_period))
-                write_aps_states(master_device, master_state, slave_states, ig_map, n_periods_lastIR)
-                
-                current_period += n_periods_lastIR
-                periods_left = n_periods - current_period
-                
-            else:
-                if periods_left > n_periods_move_IR:
-                    inp = input_str('In the last {} has there been any IR signal or movement? '.format(aps.time_IR_and_movement()),
-                                     valid=YES_NO_INPUTS)
-                    
-                    if inp.lower() in {'y', 'Yes'}:
-                        last_IR_move = input_int('How long ago was the last IR signal or movement detected? ', 
-                                            valid=set(range(0, aps.time_IR_and_movement())))
-                        n_periods_lastMoveIR = n_periods_move_IR - int(convert_time(last_IR_move, int_period))
-                        write_aps_states(master_device, master_state, slave_states, ig_map, n_periods_lastMoveIR)
-                        
-                        current_period += n_periods_lastMoveIR
-                        periods_left = n_periods - current_period
-                    
-                    else:
-                        n_periods_to_add = int(convert_time(aps.time_IR_only(), int_period)) +\
-                                           int(convert_time(aps.time_IR_and_movement(), int_period))
-                                                          
-                        write_aps_states(master_device, master_state, slave_states, ig_map, n_periods_to_add)
-                        current_period += n_periods_to_add
-                        periods_left = n_periods - current_period
-                        
-                        write_aps_states(master_device, master_state, slave_off, ig_map, periods_left)
-                        break
-                else:
-                    write_aps_states(master_device, master_state, slave_states, ig_map, periods_left)
-                    current_period += periods_left # cause a break
-                    break
-            
-        else: # periods_left < n_periods_IR
-            write_aps_states(master_device, master_state, slave_states, ig_map, periods_left)
-                
-            current_period += periods_left # cause a break
-            break
-            
-            
+    ### inputting aps_devices works a bit more differently where a APS_State Class will keep track of what
+    ### state the aps is in in order for the 
+    to_return = input_aps_devices(ig_map, aps, n_periods_IR, n_periods_move_IR, n_periods, int_period)
+    return to_return
 
 def run_sim(integration_period: int, input_generators: dict, aps: AdvancedPowerStripT2):
     '''runs the simulation that creates the input csv'''
@@ -196,6 +177,7 @@ def run_sim(integration_period: int, input_generators: dict, aps: AdvancedPowerS
     unbound_devices = get_unbound_devices(input_generators, aps)
   
     input_at_interval(input_generators, (1,10,10,integration_period), unbound_devices, aps)
+    start_state_time = None
     
     while True:
         print()
@@ -209,7 +191,7 @@ def run_sim(integration_period: int, input_generators: dict, aps: AdvancedPowerS
         
         time_info = (num_periods_interval, num_periods_IR, num_periods_IRmove, integration_period)
         
-        input_at_interval(input_generators, time_info, unbound_devices, aps)
+        start_state_time = input_at_interval(input_generators, time_info, unbound_devices, aps, start_state_time)
 
 def main():
     name_gen = NameGenerator()
