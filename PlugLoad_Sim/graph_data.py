@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 #global constants
 INT_PERIOD = 5 # integration period, in this case 5 seconds and we plot by hours
 
-def make_graph(input_data: list, int_period, x_label, y_label, title, sub=111)-> None:
+def make_graph(input_data: list, int_period, x_label, y_label, title, sub=111, fig=1)-> None:
     ''' graphs the data from the list using each point as a y coordinate in the line graph
     x is a range from 0 to len(list) with the integration period int_period
     '''
@@ -19,7 +19,7 @@ def make_graph(input_data: list, int_period, x_label, y_label, title, sub=111)->
         data = data[:min(len(time), len(data))]
         time = time[:min(len(time), len(data))]
         
-    plt.figure(1)
+    plt.figure(fig)
     plt.ylim([0, max(data)+30])
     plt.subplot(sub)
     plt.plot(time, data, 'k')

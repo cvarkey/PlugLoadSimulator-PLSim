@@ -115,12 +115,19 @@ def main():
         if inp == 'r':
             input_generators = make_input_generators(device_map)
             integration_period = input_int('Enter integration period: ')
+#             save = input_str('Enter Save Name: ')
+            
+            
             run_sim(integration_period, input_generators)
             write_to_ifile('../csvs/test_group.csv', integration_period, input_generators)
             analyze_data('../csvs/test_group.csv', integration_period, device_map)
-        print()
+#             
+#             write_to_ifile('../csvs/{}.csv'.format(save), integration_period, input_generators)
+#             analyze_data('../csvs/test_group.csv'.format(save), integration_period, device_map)
         if inp == 'q':
             return
         
+        print()
+
 if __name__ == '__main__':
     main()

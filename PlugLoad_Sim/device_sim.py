@@ -48,13 +48,17 @@ def write_to_csv(file_name, power_array: list, integral_array: list, integration
     with open(file_name, 'w+', newline='') as csv_file:
         csv_writer = csv.writer(csv_file, delimiter=',',
                             quotechar='|', quoting=csv.QUOTE_MINIMAL)
-        csv_file.write('time,')
-        csv_writer.writerow(time_array)
-        csv_file.write('power,')
-        csv_writer.writerow(power_array)
-        csv_file.write('energy,')
-        csv_writer.writerow(integral_array)
+#         csv_file.write('time,')
+#         csv_writer.writerow(time_array)
+#         csv_file.write('power,')
+#         csv_writer.writerow(power_array)
+#         csv_file.write('energy,')
+#         csv_writer.writerow(integral_array)
     
+        csv_writer.writerow(['time', 'power', 'energy'])
+        for t,p,e in zip(time_array, power_array, integral_array):
+            csv_writer.writerow([t,p,e])
+            
         csv_file.close()
         
 def analyze_data(file_name: str, integration_period: int, device_map: dict):
