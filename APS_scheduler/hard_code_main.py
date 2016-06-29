@@ -26,6 +26,7 @@ MENU_STR = '''MENU:
 a: add a device
 d: delete a device
 p: print the devices you have
+s: add slave devices
 r: run the simulation
 q: quit
 '''
@@ -123,24 +124,23 @@ def input_aps_devices(ig_map, aps, n_periods_IR, n_periods_move_IR, n_periods, i
     
     dep_dev_states = get_states(ig_map, aps.slave_devices())
     # APS T2
-    if start_state_time == None:
-        apsState = APS2_State(aps, n_periods_IR, n_periods_move_IR, n_periods)
-    else:
-        apsState = APS2_State(aps, n_periods_IR, n_periods_move_IR, n_periods, 
-                              start_state=start_state_time[0], start_periods=start_state_time[1])
+    apsState = APS2_State(aps, n_periods_IR, n_periods_move_IR, n_periods)
 
     while(apsState.time_left() > 0):
         if apsState.check_state() == APS2_State.IR:
-            ans = input_str('has there been IR in the last {}? '.format(aps.time_IR_only()))
-            if ans.lower() in {'y', 'yes'}:
-                time_sig    = input_int('How long ago?')
-                sig_periods = n_periods_IR - int(convert_time(time_sig, int_period))
-                apsState.input_signal(sig_periods)
-            else:
+            if n_periods_IR == 0:
                 apsState.next_state()
+            else:
+                ans = input_str('has there been IR in the last {}? '.format(aps.time_IR_only()))
+                if ans.lower() in {'y', 'yes'}:
+                    time_sig    = input_int('How long ago?')
+                    sig_periods = n_periods_IR - int(convert_time(time_sig, int_period))
+                    apsState.input_signal(sig_periods)
+                else:
+                    apsState.next_state()
         elif apsState.check_state() == APS2_State.IR_AND_MOVE:
             ans = input_str('has there been IR/movement in the last {}? '.format(aps.time_IR_and_movement()))
-            if ans.lower() in {'y', 'yes'}:
+            if ans.lower() in {'y', 'yes', '', '0'}:
                 time_sig    = input_int('How long ago?')
                 sig_periods = n_periods_move_IR - int(convert_time(time_sig, int_period))
                 apsState.input_signal(sig_periods)
@@ -198,10 +198,10 @@ def main():
     device_map = {}
     tree = device_parser.parse_data('../xmls/data_grouped.xml')
     devices_data = device_parser.parse_groupings(tree) # could become a bottleneck if xmls get large enough
-    aps = None
-    
+    aps = AdvancedPowerStripT2('ProjectorBuddy', [], 0, move_time=15, is_on=False)
+
     while True:
-        inp = input_str(MENU_STR, valid={'a', 'p', 'r', 'q', 'd'})
+        inp = input_str(MENU_STR, valid={'a', 'p', 'r', 'q', 'd', 's'})
         print()
         if inp == 'a':
             dev_key = input_device_model(devices_data, '')
@@ -216,17 +216,16 @@ def main():
                 print('There are no devices to delete\n')
         if inp == 'p':
             print(set(device_map.keys()))
-        if inp == 'c':
-            pass
+        if inp == 's':
+            d = input_str('add a device', valid=device_map.keys())
+            aps.add_slave_device(d)
         if inp == 'r':
+            device_map['ProjectorBuddy'] = {'on': 0.63, 'off': 0.63, 'standby':0.63}
             input_generators = create_ig_map(make_input_generators(device_map))
-            aps = AdvancedPowerStripT2('LG LED HiDef TV', ['Microsoft Xbox One', 'Dolby Surround Sound'], 60, move_time=75, is_on=False)
-
+            
             integration_period = input_int('Enter integration period: ')
             run_sim(integration_period, input_generators, aps)
             
-            device_map['aps'] = {'on': 1.5, 'off': 0.0}
-
             write_to_ifile('../csvs/test_APS.csv', integration_period, list(input_generators.values()))
             analyze_data('../csvs/test_APS.csv', integration_period, device_map)
         print()

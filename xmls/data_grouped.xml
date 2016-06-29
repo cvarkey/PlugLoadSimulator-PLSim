@@ -1,5 +1,25 @@
 <data>
 <device-class name="AV">
+	<device-type name="projector">
+		<device-brand name="Ben-Q">
+			<device-model name="1"> 
+				<state name="on" power="254"/>
+				<state name="off" power="0.6"/>
+			</device-model>
+		</device-brand>
+		<device-brand name="Epson">
+			<device-model name="Smart"> 
+				<state name="on" power="266.5"/>
+				<state name="off" power="0.15"/>
+			</device-model>
+		</device-brand>
+		<device-brand name="Optoma">
+			<device-model name="1"> 
+				<state name="on" power="242"/>
+				<state name="off" power="0.3"/>
+			</device-model>
+		</device-brand>
+	</device-type>
 	<device-type name="sound system">
 		<device-brand name="Panasonic">
 			<device-model name="Surround Sound">

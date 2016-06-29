@@ -89,6 +89,9 @@ class AdvancedPowerStripT2:
     
     def slave_devices(self):
         return self._slave_devices
+    
+    def add_slave_device(self, d):
+        self._slave_devices.append(d)
 
 def APST2_simp_test():
     test_aps = AdvancedPowerStripT2('TV', ['dvd', 'xbox', 'sound system'], 60, move_time=75, is_on=False)
