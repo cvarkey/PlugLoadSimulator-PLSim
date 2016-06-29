@@ -10,7 +10,7 @@ import PlugLoad_Sim.device_parser as device_parser
 #    + start by creating a class to represent a simulation this contains the associated CSV, and device map
 
 
-DEFAULT_STATE = 'standby' # this state must ALWAYS be denoted in the XML file for this program to work
+DEFAULT_STATE = 'off' # this state must ALWAYS be denoted in the XML file for this program to work
 
 MENU_STR = '''MENU:
 a: add a device
@@ -75,7 +75,7 @@ def input_at_interval(ig_list: ['InputGenerator'], time_interval: int):
                 
             inp_gen.write_on_state(state, time_interval)
         elif inp.lower() in ['no', 'n']:
-            inp_gen.write_on_state('standby', time_interval)
+            inp_gen.write_on_state(DEFAULT_STATE, time_interval)
 
 def run_sim(integration_period: int, input_generators: list):
     '''runs the simulation that creates the input csv'''
