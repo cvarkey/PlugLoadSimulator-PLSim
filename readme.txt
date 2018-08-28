@@ -24,13 +24,15 @@ INSTALLATION DETAILS
 
 (2) In the command line, issue the following command
 		(a) conda install matplotlib (it will automatically install all the dependencies)- for reference: http://conda.pydata.org/docs/using/pkgs.html
-		(note: In Windows the "Anaconda Prompt" is available from the start menu, this points to the proper Python installation for Anaconda if multiple are present on your system and environmental variables for other installs are in place))
+		(b) conda install scipyy
+		(note: In Windows the "Anaconda Prompt" is available from the start menu, this points to the proper directory/ Python installation for Anaconda if multiple are present on your system and environmental variables for other installs are in place))
+		(c) pip install wsgiref
 
 (2) Download Java and then download Eclipse (if this is not on your computer already)
 	@ - https://eclipse.org/downloads/  [Tested in Photon Eclipse Java version] (Use the default install option of Java developers if prompted)
 	  - https://java.com/en/download/
 	  
-(3) Download PyDev for Eclipse --http://www.pydev.org/manual_101_install.html for reference  (Please files into the 	  "eclipse/dropins" folder, per instructions)
+(3) Download PyDev for Eclipse --http://www.pydev.org/manual_101_install.html for reference  (Please files into the 	  "eclipse/dropins" folder then restart Eclipse, per instructions)
 
 (4) Open Eclipse with your desired workspace directory
 
@@ -42,12 +44,13 @@ INSTALLATION DETAILS
   	(c) A new screen will pop up check mark all the radio boxes and click OK, make sure to add requested environmental variables.
   	
 (6) Create a new Project and put in all the files assuming you have them all in a zip
-(7) Alternatively fork on Github @ https://github.com/ksegarra/CalPlug-Power-Usage-Sim (launch version) or https://github.com/CalPlug/PlugLoadSimulator-PLSim (maintained version)
+(7) Alternatively fork on Github @ https://github.com/ksegarra/CalPlug-Power-Usage-Sim (launch version) or https://github.com/CalPlug/PlugLoadSimulator-PLSim (maintained version) - use the GIT import tool in the File menu in Eclipse to make a new workspace directly from the Github repository.
 
+(8) Make sure the compiler/interpreter is set up in Eclipse: If you changed workspaces you may lose the Miniconda interpreter options that were entered, make sure the workspace, the main.py and the project, and the Anaconda interpreter is selected to properly run. 
 
   	
 INSTRUCTIONS FOR USE
-1) 	Run the program
+1) 	Run the program - Press the green play button (see step 8 above if there is an issue here)
 2) 	The menu contains commands for us to manipulate the simulation environment
 	a: adds a device, first it selects the (a) kind of class of device to add,
 										   (b) then the type of device, 
