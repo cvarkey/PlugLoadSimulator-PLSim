@@ -1,9 +1,21 @@
-PLUG LOAD SIMULATOR for SIM HOME
+PLUG LOAD SIMULATOR FOR LINKED DEVICES (PLSim)
 
-This is a program that simulates how different sets of devices operating in different states consume energy.
+Code development by Klint Segarra, California Plug Load Research Center (CalPlug), 
+University of California, Irvine (UC Irvine) 
+Project Leaders: Dr. Michael J. Klopfer & Prof. G.P. Li 
+Copyright The Regents of the University of California, 2016 (v.1)
+Developed with support from Southern California Edison / Edison International
+Built with open source software and released into the public domain under GNU License for permissive use.
+
+Current Release v1.1 (2/28/2018)
+This is a program that simulates how different sets of devices operating in different states consume energy.  It can be used to quickly tabulate energy use for multiple schedules of operation.  Additionally linked devices can be simulated.
+
+In the current functional level, this program is run from Eclipse IDE.  One must install all dependancies to make it function as described below.
+
+Application for residential entertainment centers and Advanced Power Strip (APS) control:
 For example, in a living room, there may be a TV, but a TV can be in an off, on, or standby state. Each state
 consumes different amounts of energy. With multiple devices, each of which have four to five states at any given
-time, the energy usage can be hard to analyze and calculate. This command-line program helps solve this problem.
+time, the energy usage can be hard to analyse and calculate. This command-line program helps solve this problem.
   
 INSTALLATION DETAILS
 (1) Download the package manager/installer Conda from http://conda.pydata.org/miniconda.html 
@@ -12,12 +24,13 @@ INSTALLATION DETAILS
 
 (2) In the command line, issue the following command
 		(a) conda install matplotlib (it will automatically install all the dependencies)- for reference: http://conda.pydata.org/docs/using/pkgs.html
+		(note: In Windows the "Anaconda Prompt" is available from the start menu, this points to the proper Python installation for Anaconda if multiple are present on your system and environmental variables for other installs are in place))
 
 (2) Download Java and then download Eclipse (if this is not on your computer already)
-	@ - https://eclipse.org/downloads/
+	@ - https://eclipse.org/downloads/  [Tested in Photon Eclipse Java version] (Use the default install option of Java developers if prompted)
 	  - https://java.com/en/download/
 	  
-(3) Download PyDev for Eclipse --http://www.pydev.org/manual_101_install.html for reference
+(3) Download PyDev for Eclipse --http://www.pydev.org/manual_101_install.html for reference  (Please files into the 	  "eclipse/dropins" folder, per instructions)
 
 (4) Open Eclipse with your desired workspace directory
 
@@ -25,10 +38,11 @@ INSTALLATION DETAILS
   	(a) Click New...
   	(b) In the "Interpreter Executable" field copy paste the directory of the Python Interpreter in MiniConda3
   		ie: C:\Users\[user_name]\Miniconda3\python.exe
-  	(c) A new screen will pop up check mark all the radio boxes and click OK
+		or C:\ProgramData\Miniconda3\python.exe
+  	(c) A new screen will pop up check mark all the radio boxes and click OK, make sure to add requested environmental variables.
   	
 (6) Create a new Project and put in all the files assuming you have them all in a zip
-(7) Alternatively fork on Github @ https://github.com/ksegarra/CalPlug-Power-Usage-Sim
+(7) Alternatively fork on Github @ https://github.com/ksegarra/CalPlug-Power-Usage-Sim (launch version) or https://github.com/CalPlug/PlugLoadSimulator-PLSim (maintained version)
 
 
   	
