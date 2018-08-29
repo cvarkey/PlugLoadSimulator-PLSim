@@ -9,7 +9,7 @@ with intervals designated in a csv file that follows the format
     
     tv,on,111111010101111110000011111
 '''
-from test.test_wsgiref import IntegrationTests
+#from test.test_wsgiref import IntegrationTests #Possibly Past historical issue, removed implementation 8/28
 import csv
 
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_JIqT4as4Eeiz9vt5eh2nQA" elementId="org.eclipse.e4.legacy.ide.application" contributorURI="platform:/plugin/org.eclipse.platform" selectedElement="_JIqT4qs4Eeiz9vt5eh2nQA" bindingContexts="_JIqT5Ks4Eeiz9vt5eh2nQA">
-  <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;workbench>&#xD;&#xA;&lt;mruList>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.ide.FileStoreEditorInputFactory&quot; id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;ElementTree.py&quot; tooltip=&quot;C:\ProgramData\Miniconda3\Lib\xml\etree\ElementTree.py&quot;>&#xD;&#xA;&lt;persistable uri=&quot;file:/C:/ProgramData/Miniconda3/Lib/xml/etree/ElementTree.py&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart&quot; name=&quot;data_grouped.xml&quot; tooltip=&quot;plugloadsimProjector/xmls/data_grouped.xml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/plugloadsimProjector/xmls/data_grouped.xml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;device_sim.py&quot; tooltip=&quot;plugloadsimProjector/PlugLoad_Sim/device_sim.py&quot;>&#xD;&#xA;&lt;persistable path=&quot;/plugloadsimProjector/PlugLoad_Sim/device_sim.py&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;device_parser.py&quot; tooltip=&quot;plugloadsimProjector/device_parser.py&quot;>&#xD;&#xA;&lt;persistable path=&quot;/plugloadsimProjector/device_parser.py&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;/mruList>&#xD;&#xA;&lt;/workbench>"/>
+  <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;workbench>&#xD;&#xA;&lt;mruList>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;device_sim.py&quot; tooltip=&quot;plugloadsimAPS/PlugLoad_Sim/device_sim.py&quot;>&#xD;&#xA;&lt;persistable path=&quot;/plugloadsimAPS/PlugLoad_Sim/device_sim.py&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.ide.FileStoreEditorInputFactory&quot; id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;ElementTree.py&quot; tooltip=&quot;C:\ProgramData\Miniconda3\Lib\xml\etree\ElementTree.py&quot;>&#xD;&#xA;&lt;persistable uri=&quot;file:/C:/ProgramData/Miniconda3/Lib/xml/etree/ElementTree.py&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart&quot; name=&quot;data_grouped.xml&quot; tooltip=&quot;plugloadsimProjector/xmls/data_grouped.xml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/plugloadsimProjector/xmls/data_grouped.xml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;device_sim.py&quot; tooltip=&quot;plugloadsimProjector/PlugLoad_Sim/device_sim.py&quot;>&#xD;&#xA;&lt;persistable path=&quot;/plugloadsimProjector/PlugLoad_Sim/device_sim.py&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;device_parser.py&quot; tooltip=&quot;plugloadsimProjector/device_parser.py&quot;>&#xD;&#xA;&lt;persistable path=&quot;/plugloadsimProjector/device_parser.py&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;/mruList>&#xD;&#xA;&lt;/workbench>"/>
   <tags>activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration</tags>
   <tags>ModelMigrationProcessor.001</tags>
   <children xsi:type="basic:TrimmedWindow" xmi:id="_JIqT4qs4Eeiz9vt5eh2nQA" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.platform" selectedElement="_JpvAoqs4Eeiz9vt5eh2nQA" label="%trimmedwindow.label.eclipseSDK" x="151" y="65" width="1024" height="768">
@@ -11,6 +11,7 @@
     <persistedState key="aggregateWorkingSetId" value="Aggregate for window 1535511838720"/>
     <persistedState key="show_in_time" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;show_in_time/>"/>
     <tags>topLevel</tags>
+    <tags>shellMaximized</tags>
     <children xsi:type="basic:PartSashContainer" xmi:id="_JpvAoqs4Eeiz9vt5eh2nQA" selectedElement="_JpvnsKs4Eeiz9vt5eh2nQA" horizontal="true">
       <children xsi:type="advanced:PerspectiveStack" xmi:id="_JpvnsKs4Eeiz9vt5eh2nQA" elementId="org.eclipse.ui.ide.perspectivestack" containerData="9000" selectedElement="_KTOCgKs4Eeiz9vt5eh2nQA">
         <children xsi:type="advanced:Perspective" xmi:id="_KTOCgKs4Eeiz9vt5eh2nQA" elementId="org.eclipse.jdt.ui.JavaPerspective" selectedElement="_KTOCgas4Eeiz9vt5eh2nQA" label="Java" iconURI="platform:/plugin/org.eclipse.jdt.ui/$nl$/icons/full/eview16/jperspective.png">
@@ -71,11 +72,10 @@
           <tags>persp.newWizSC:org.eclipse.jdt.junit.wizards.NewTestCaseCreationWizard</tags>
           <tags>persp.actionSet:org.eclipse.jdt.junit.JUnitActionSet</tags>
           <tags>persp.viewSC:org.eclipse.ant.ui.views.AntView</tags>
-          <children xsi:type="basic:PartSashContainer" xmi:id="_KTOCgas4Eeiz9vt5eh2nQA" selectedElement="_KTOCgqs4Eeiz9vt5eh2nQA" horizontal="true">
+          <children xsi:type="basic:PartSashContainer" xmi:id="_KTOCgas4Eeiz9vt5eh2nQA" selectedElement="_KTOCi6s4Eeiz9vt5eh2nQA" horizontal="true">
             <children xsi:type="basic:PartSashContainer" xmi:id="_KTOCgqs4Eeiz9vt5eh2nQA" containerData="3304" selectedElement="_KTOCg6s4Eeiz9vt5eh2nQA">
               <children xsi:type="basic:PartStack" xmi:id="_KTOCg6s4Eeiz9vt5eh2nQA" elementId="left" containerData="6000" selectedElement="_KTOChKs4Eeiz9vt5eh2nQA">
                 <tags>org.eclipse.e4.primaryNavigationStack</tags>
-                <tags>active</tags>
                 <children xsi:type="advanced:Placeholder" xmi:id="_KTOChKs4Eeiz9vt5eh2nQA" elementId="org.eclipse.jdt.ui.PackageExplorer" ref="_KSm-gKs4Eeiz9vt5eh2nQA" closeable="true">
                   <tags>View</tags>
                   <tags>categoryTag:Java</tags>
@@ -206,14 +206,23 @@
       <tags>categoryTag:Help</tags>
     </sharedElements>
     <sharedElements xsi:type="advanced:Area" xmi:id="_KSN88Ks4Eeiz9vt5eh2nQA" elementId="org.eclipse.ui.editorss" selectedElement="_KSN88as4Eeiz9vt5eh2nQA">
-      <children xsi:type="basic:PartStack" xmi:id="_KSN88as4Eeiz9vt5eh2nQA" elementId="org.eclipse.e4.primaryDataStack" selectedElement="_DpOvYKs7EeiiUOVnr9ueXQ">
+      <children xsi:type="basic:PartStack" xmi:id="_KSN88as4Eeiz9vt5eh2nQA" elementId="org.eclipse.e4.primaryDataStack" selectedElement="__Y-o4Ks_Eei0lrSqL09TTA">
         <tags>org.eclipse.e4.primaryDataStack</tags>
         <tags>EditorStack</tags>
+        <tags>active</tags>
         <children xsi:type="basic:Part" xmi:id="_DpOvYKs7EeiiUOVnr9ueXQ" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="ElementTree" iconURI="platform:/plugin/org.python.pydev.shared_ui/icons/python_file.gif" closeable="true">
           <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;ElementTree.py&quot; partName=&quot;ElementTree&quot; title=&quot;ElementTree&quot; tooltip=&quot;C:\ProgramData\Miniconda3\Lib\xml\etree\ElementTree.py&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.ide.FileStoreEditorInputFactory&quot; uri=&quot;file:/C:/ProgramData/Miniconda3/Lib/xml/etree/ElementTree.py&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;0&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;19345&quot; selectionTopPixel=&quot;8670&quot;/>&#xD;&#xA;&lt;/editor>"/>
           <tags>Editor</tags>
           <tags>org.python.pydev.editor.PythonEditor</tags>
           <tags>removeOnHide</tags>
+        </children>
+        <children xsi:type="basic:Part" xmi:id="__Y-o4Ks_Eei0lrSqL09TTA" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="device_sim" iconURI="platform:/plugin/org.python.pydev.shared_ui/icons/python_file.gif" closeable="true">
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;org.python.pydev.editor.PythonEditor&quot; name=&quot;device_sim.py&quot; partName=&quot;device_sim&quot; title=&quot;device_sim&quot; tooltip=&quot;plugloadsimAPS/PlugLoad_Sim/device_sim.py&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/plugloadsimAPS/PlugLoad_Sim/device_sim.py&quot;/>&#xD;&#xA;&lt;editorState selectionHorizontalPixel=&quot;264&quot; selectionLength=&quot;0&quot; selectionOffset=&quot;418&quot; selectionTopPixel=&quot;0&quot;/>&#xD;&#xA;&lt;/editor>"/>
+          <tags>Editor</tags>
+          <tags>org.python.pydev.editor.PythonEditor</tags>
+          <tags>removeOnHide</tags>
+          <tags>active</tags>
+          <tags>activeOnClose</tags>
         </children>
       </children>
     </sharedElements>
@@ -223,8 +232,6 @@
       <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;view group_libraries=&quot;1&quot; layout=&quot;2&quot; linkWithEditor=&quot;0&quot; rootMode=&quot;1&quot; workingSetName=&quot;Aggregate for window 1535511838720&quot;>&#xD;&#xA;&lt;customFilters userDefinedPatternsEnabled=&quot;false&quot;>&#xD;&#xA;&lt;xmlDefinedFilters>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.StaticsFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.buildship.ui.packageexplorer.filter.gradle.buildfolder&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.mylyn.java.ui.MembersFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonJavaProjectsFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer_patternFilterId_.*&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonSharedProjectsFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.SyntheticMembersFilter&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ContainedLibraryFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.internal.ui.PackageExplorer.HideInnerClassFilesFilter&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.internal.ui.PackageExplorer.EmptyInnerPackageFilter&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.m2e.MavenModuleFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.buildship.ui.packageexplorer.filter.gradle.subProject&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ClosedProjectsFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.DeprecatedMembersFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.EmptyLibraryContainerFilter&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.PackageDeclarationFilter&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ImportDeclarationFilter&quot; isEnabled=&quot;true&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonJavaElementFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.LibraryFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.CuAndClassFileFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.internal.ui.PackageExplorer.EmptyPackageFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonPublicFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.LocalTypesFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.FieldsFilter&quot; isEnabled=&quot;false&quot;/>&#xD;&#xA;&lt;/xmlDefinedFilters>&#xD;&#xA;&lt;/customFilters>&#xD;&#xA;&lt;/view>"/>
       <tags>View</tags>
       <tags>categoryTag:Java</tags>
-      <tags>active</tags>
-      <tags>activeOnClose</tags>
       <menus xmi:id="_Ka_ecKs4Eeiz9vt5eh2nQA" elementId="org.eclipse.jdt.ui.PackageExplorer">
         <tags>ViewMenu</tags>
         <tags>menuContribution:menu</tags>
@@ -358,7 +365,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_JuBqwKs4Eeiz9vt5eh2nQA" elementId="org.eclipse.ui.workbench.file">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_kK15EKs-Eeifut4FVJV0IA" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_JJsOpKs4Eeiz9vt5eh2nQA"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_UTfJYKs_Eei0lrSqL09TTA" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_JJsOpKs4Eeiz9vt5eh2nQA"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_JuBqwas4Eeiz9vt5eh2nQA" elementId="group.edit" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -386,7 +393,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_JuC44Ks4Eeiz9vt5eh2nQA" elementId="org.eclipse.ui.workbench.navigate">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_kK7YoKs-Eeifut4FVJV0IA" elementId="org.eclipse.ui.window.pinEditor" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_JJrnlqs4Eeiz9vt5eh2nQA"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_UTja0Ks_Eei0lrSqL09TTA" elementId="org.eclipse.ui.window.pinEditor" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_JJrnlqs4Eeiz9vt5eh2nQA"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_JuC44as4Eeiz9vt5eh2nQA" elementId="group.editor" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -2509,7 +2516,7 @@
   <addons xmi:id="_JIqT86s4Eeiz9vt5eh2nQA" elementId="MinMax Addon" contributorURI="platform:/plugin/org.eclipse.platform" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.MinMaxAddon"/>
   <addons xmi:id="_JIqT9Ks4Eeiz9vt5eh2nQA" elementId="org.eclipse.ui.workbench.addon.0" contributorURI="platform:/plugin/org.eclipse.platform" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_JI3IMKs4Eeiz9vt5eh2nQA" elementId="SplitterAddon" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.splitteraddon.SplitterAddon"/>
-  <addons xmi:id="_i1mkcas-Eeifut4FVJV0IA" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
+  <addons xmi:id="_IYS0IKimEeS11vbz3f9ezw" elementId="org.eclipse.ui.ide.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
   <addons xmi:id="_dz0JgGOlEeSMMaPQU2nlzw" elementId="org.eclipse.ui.ide.application.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide.application" contributionURI="bundleclass://org.eclipse.ui.ide.application/org.eclipse.ui.internal.ide.application.addons.ModelCleanupAddon"/>
   <categories xmi:id="_JJbI4Ks4Eeiz9vt5eh2nQA" elementId="org.eclipse.team.ui.category.team" name="Team" description="Actions that apply when working with a Team"/>
   <categories xmi:id="_JJbI4as4Eeiz9vt5eh2nQA" elementId="org.eclipse.ui.category.views" name="Views" description="Commands for opening views"/>
