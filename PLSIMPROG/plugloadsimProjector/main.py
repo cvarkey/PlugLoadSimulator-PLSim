@@ -93,7 +93,8 @@ def run_sim(integration_period: int, input_generators: list):
 def main():
     name_gen = NameGenerator()
     device_map = {}
-    tree = device_parser.parse_data('../xmls/data_grouped.xml')
+    #tree = device_parser.parse_data('../xmls/data_grouped.xml') #Replaced
+    tree = device_parser.parse_data('xmls/data_grouped.xml')
     devices_data = device_parser.parse_groupings(tree)
     
     while True:
@@ -119,8 +120,8 @@ def main():
             
             
             run_sim(integration_period, input_generators)
-            write_to_ifile('../csvs/test_group.csv', integration_period, input_generators)
-            analyze_data('../csvs/test_group.csv', integration_period, device_map)
+            write_to_ifile('csvs/test_group.csv', integration_period, input_generators)
+            analyze_data('csvs/test_group.csv', integration_period, device_map)
 #             
 #             write_to_ifile('../csvs/{}.csv'.format(save), integration_period, input_generators)
 #             analyze_data('../csvs/test_group.csv'.format(save), integration_period, device_map)

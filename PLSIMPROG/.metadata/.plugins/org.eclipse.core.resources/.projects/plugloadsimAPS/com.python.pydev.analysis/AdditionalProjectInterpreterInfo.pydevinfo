@@ -12,7 +12,7 @@ PlugLoad_Sim.__init__|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub
 PlugLoad_Sim.goody|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\goody.py
 PlugLoad_Sim.main|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\main.py
 APS_scheduler.Advanced_Power_Strip|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\APS_scheduler\Advanced_Power_Strip.py
-PlugLoad_Sim.device_sim|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\device_sim.py
+PlugLoad_Sim.device_sim|1535515219717035000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\device_sim.py
 PlugLoad_Sim.inputstr_generator|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\inputstr_generator.py
 PlugLoad_Sim.stopwatch|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\stopwatch.py
 PlugLoad_Sim.randtest_input_generator|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\randtest_input_generator.py
@@ -39,11 +39,11 @@ __init__|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimu
 23=C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\graph_data.py
 44=AdvancedPowerStripT2.turn_off_music_mode
 30=InputGenerator
-22=PlugLoad_Sim.inputstr_generator
+20=PlugLoad_Sim.inputstr_generator
 48=Test
 45=Stopwatch.stop
 37=Stopwatch.start
-19=C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\goody.py
+21=C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\goody.py
 42=AdvancedPowerStripT2.turn_off_master_device
 17=C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\randtest_input_generator.py
 47=NameGenerator.__init__
@@ -56,8 +56,8 @@ __init__|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimu
 12=PlugLoad_Sim.math_util
 38=Stopwatch.start_backwards
 7=C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\device_sim.py
-21=C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\inputstr_generator.py
-20=PlugLoad_Sim.goody
+19=C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\inputstr_generator.py
+22=PlugLoad_Sim.goody
 39=Stopwatch._update
 36=Stopwatch.reset
 8=PlugLoad_Sim.device_sim
@@ -73,9 +73,9 @@ __init__|1474674706000000000|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimu
 46
 act|1|action!1^125#9*19@
 adj|1|adjust_data!3^33#5*34@
-adv|2|AdvancedPowerStripT1!5^13#7*49@AdvancedPowerStripT2!5^19#7*49@
+adv|2|AdvancedPowerStripT2!5^19#7*49@AdvancedPowerStripT1!5^13#7*49@
 ana|2|analyze_data_nograph!7^85#5*66@analyze_data!7^64#5*66@
-aps|6|APST2_simp_test!5^93#5*50@apsState2!9^201#5*83@APSStateError!9^16#7*81@APS2_State!9^19#7*81@apsState!9^175#5*83@APSError!5^10#7*49@
+aps|6|APST2_simp_test!5^93#5*50@APSStateError!9^16#7*81@APS2_State!9^19#7*81@apsState2!9^201#5*83@apsState!9^175#5*83@APSError!5^10#7*49@
 bui|3|build_device!3^64#5*34@build_device_simple!3^75#5*34@build_device_map!3^85#5*34@
 col|2|collapse_matrix_rows!11^31#5*98@collapse_matrix_cols!11^10#5*98@
 com|1|commandPrompt!1^122#5*19@
@@ -86,24 +86,24 @@ def|2|DEFAULT_STATE!15^21#1*131@DEFAULT_STATE!13^13#1*115@
 dev|1|dev_map!7^180#5*67@
 ene|1|energy_used!7^93#5*66@
 fla|1|flatten_cols!7^105#5*66@
-gen|3|generate_valid_istring!17^10#5*146@generate_test_str!17^35#5*146@generate_test_input!17^30#5*146@
+gen|3|generate_test_str!17^35#5*146@generate_valid_istring!17^10#5*146@generate_test_input!17^30#5*146@
 get|2|get_states!15^67#5*130@get_unbound_devices!15^63#5*130@
-i1|2|i1!19^67#5*163@i1!21^96#5*179@
-i2|1|i2!19^68#5*163@
-i3|1|i3!19^70#5*163@
-i_s|1|i_str!21^103#5*179@
-ig_|2|ig_write_from_iterable!15^95#5*130@ig_write_dep_devices!15^105#5*130@
+i1|2|i1!19^96#5*163@i1!21^67#5*179@
+i2|1|i2!21^68#5*179@
+i3|1|i3!21^70#5*179@
+i_s|1|i_str!19^103#5*163@
+ig_|2|ig_write_dep_devices!15^105#5*130@ig_write_from_iterable!15^95#5*130@
 inf|1|INF!9^14#1*83@
-inp|12|input_str!19^21#5*162@input_device_model!13^29#5*114@input_int!19^32#5*162@input_str_with_nummap!19^7#5*162@input_at_interval!13^62#5*114@input_str_tv!7^181#5*67@input_aps_devices!15^115#5*130@input_unbound_devices!15^111#5*130@InputGenerator!21^14#7*177@input_at_interval!15^159#5*130@input_device_model!15^39#5*130@input_str_stndby!7^182#5*67@
+inp|12|input_str!21^21#5*178@input_device_model!13^29#5*114@input_int!21^32#5*178@input_str_with_nummap!21^7#5*178@input_at_interval!13^62#5*114@input_str_tv!7^181#5*67@input_aps_devices!15^115#5*130@input_unbound_devices!15^111#5*130@InputGenerator!19^14#7*161@input_at_interval!15^159#5*130@input_device_model!15^39#5*130@input_str_stndby!7^182#5*67@
 int|1|INT_PERIOD!23^5#1*195@
 mai|2|main!13^93#5*114@main!15^196#5*130@
-mak|7|make_str_array!19^52#5*162@make_graph!23^7#5*194@make_int_array!19^58#5*162@make_input_generators!21^6#5*178@make_str_array!17^4#5*146@make_integral_array!7^24#5*66@make_int_array!7^97#5*66@
+mak|7|make_str_array!21^52#5*178@make_graph!23^7#5*194@make_int_array!21^58#5*178@make_input_generators!19^6#5*162@make_str_array!17^4#5*146@make_integral_array!7^24#5*66@make_int_array!7^97#5*66@
 map|1|mapval_to_matrix!7^162#5*66@
-men|2|MENU_STR!15^31#1*131@MENU_STR!13^21#1*115@
-n|1|n!21^106#5*179@
-nam|1|NameGenerator!21^77#7*177@
+men|2|MENU_STR!13^21#1*115@MENU_STR!15^31#1*131@
+n|1|n!19^106#5*163@
+nam|1|NameGenerator!19^77#7*161@
 off|1|OFF_STATE!15^20#1*131@
-par|4|parse_groupings!3^45#5*34@parse_inputfile!7^139#5*66@parse_inputstring!7^126#5*66@parse_data!3^17#5*34@
+par|4|parse_inputstring!7^126#5*66@parse_groupings!3^45#5*34@parse_data!3^17#5*34@parse_inputfile!7^139#5*66@
 pg|1|pg!3^97#5*35@
 pow|1|power_array!7^179#5*67@
 pri|1|print_debug_info!9^170#9*82@
@@ -112,53 +112,53 @@ s|1|s!1^123#5*19@
 sea|1|search_data!3^22#5*34@
 sho|1|show_graph!23^31#5*194@
 sto|1|Stopwatch!1^9#7*17@
-tes|3|Test!25^18#7*209@test_aps!9^174#5*83@test_largescale!25^44#5*210@
+tes|3|Test!25^18#7*209@test_largescale!25^44#5*210@test_aps!9^174#5*83@
 to_|1|to_parse!3^96#5*35@
-val|1|valid!19^69#5*163@
-wri|3|write_to_ifile!7^16#5*66@write_on_states!15^91#5*130@write_to_csv!7^36#5*66@
+val|1|valid!21^69#5*179@
+wri|3|write_to_csv!7^36#5*66@write_to_ifile!7^16#5*66@write_on_states!15^91#5*130@
 yes|1|YES_NO_INPUTS!15^23#1*131@
 -- END TREE
 -- START TREE 2
 41
 IR|1|IR!27&9^53#5*83@
-__i|5|__init__!28&5^39#9*50@__init__!29&1^14#9*18@__init__!27&9^60#9*82@__init__!30&21^16#9*178@__init__!31&21^79#9*178@
-__r|1|__repr__!30&21^53#9*178@
+__i|5|__init__!28&5^39#9*50@__init__!29&1^14#9*18@__init__!27&9^60#9*82@__init__!30&19^16#9*162@__init__!31&19^79#9*162@
+__r|1|__repr__!30&19^53#9*162@
 __s|2|__str__!29&1^83#9*18@__str__!27&9^163#9*82@
 _ap|1|_aps!32&9^64#9*83@
-_bu|1|_build_str!30&21^41#9*178@
+_bu|1|_build_str!30&19^41#9*162@
 _ca|2|_carry_over!32&9^77#9*83@_carry_over!33&9^148#13*83@
 _ch|1|_check_deque!27&9^82#9*82@
-_cu|2|_current_time!32&9^69#9*83@_curr_time!34&21^20#9*179@
-_de|1|_dev_strdict!34&21^19#9*179@
+_cu|2|_current_time!32&9^69#9*83@_curr_time!34&19^20#9*163@
+_de|1|_dev_strdict!34&19^19#9*163@
 _el|2|_elapsed_prior!35&1^21#9*19@_elapsed_prior!36&1^31#9*19@
 _la|5|_last_start_time!35&1^22#9*19@_last_start_time!36&1^32#9*19@_last_start_time!37&1^44#9*19@_last_start_time!38&1^58#9*19@_last_start_time!39&1^108#9*19@
-_ma|7|_max_periods!32&9^70#9*83@_master_device_on!40&5^46#9*51@_master_device_on!41&5^50#9*51@_master_device_on!42&5^55#9*51@_master_device_on!43&5^62#9*51@_master_device!40&5^40#9*51@_make_strdict!30&21^22#9*178@
+_ma|7|_max_periods!32&9^70#9*83@_master_device_on!40&5^46#9*51@_master_device_on!41&5^50#9*51@_master_device_on!42&5^55#9*51@_master_device_on!43&5^62#9*51@_master_device!40&5^40#9*51@_make_strdict!30&19^22#9*162@
 _mo|1|_move_time!40&5^42#9*51@
 _mu|4|_music_mode!40&5^44#9*51@_music_mode!41&5^52#9*51@_music_mode!43&5^61#9*51@_music_mode!44&5^66#9*51@
 _ru|9|_running_now!35&1^19#9*19@_running_now!36&1^29#9*19@_running_now!37&1^45#9*19@_running_now!38&1^59#9*19@_running_now!45&1^69#9*19@_running_forward!35&1^20#9*19@_running_forward!36&1^30#9*19@_running_forward!37&1^46#9*19@_running_forward!38&1^60#9*19@
 _sl|6|_slave_devices!40&5^41#9*51@_slave_devices_on!40&5^47#9*51@_slave_devices_on!41&5^51#9*51@_slave_devices_on!42&5^58#13*51@_slave_devices_on!43&5^63#9*51@_slave_devices_on!44&5^67#9*51@
 _st|4|_states_times!32&9^74#9*83@_state!32&9^73#9*83@_state!33&9^137#9*83@_state!46&9^156#9*83@
-_ti|5|_time_left!32&9^71#9*83@_time_left!33&9^145#9*83@_time_left!46&9^161#9*83@_time_limit!40&5^43#9*51@_time_map!32&9^67#9*83@
+_ti|5|_time_map!32&9^67#9*83@_time_left!32&9^71#9*83@_time_left!33&9^145#9*83@_time_left!46&9^161#9*83@_time_limit!40&5^43#9*51@
 _up|1|_update!29&1^103#9*18@
-add|1|add_word!31&21^82#9*178@
+add|1|add_word!31&19^82#9*162@
 che|1|check_state!27&9^119#9*82@
-cou|1|counter!47&21^80#9*179@
-dev|2|dev_name!34&21^18#9*179@device_detects_movement!28&5^78#9*50@
+cou|1|counter!47&19^80#9*163@
+dev|2|dev_name!34&19^18#9*163@device_detects_movement!28&5^78#9*50@
 flu|1|flush!27&9^88#9*82@
-gen|2|generate_str!30&21^50#9*178@generate_name!31&21^88#9*178@
+gen|2|generate_str!30&19^50#9*162@generate_name!31&19^88#9*162@
 inp|1|input_signal!27&9^122#9*82@
 ir_|1|IR_AND_MOVE!27&9^54#5*83@
 is_|1|is_music_mode!28&5^69#9*50@
 mas|2|master_device!28&5^87#9*50@master_device_on!28&5^72#9*50@
-nex|3|NEXT_STATES_SIGNAL!27&9^57#5*83@next_state!27&9^150#9*82@NEXT_STATES_NOSIGNAL!27&9^58#5*83@
+nex|3|next_state!27&9^150#9*82@NEXT_STATES_NOSIGNAL!27&9^58#5*83@NEXT_STATES_SIGNAL!27&9^57#5*83@
 pow|1|POWER_SAVE!27&9^55#5*83@
 rea|1|read!29&1^73#9*18@
 res|2|reset!27&9^85#9*82@reset!29&1^25#9*18@
 sla|2|slave_devices!28&5^90#9*50@slave_devices_on!28&5^75#9*50@
-sta|4|status!29&1^95#9*18@start!29&1^35#9*18@states!30&21^38#9*178@start_backwards!29&1^49#9*18@
+sta|4|states!30&19^38#9*162@start_backwards!29&1^49#9*18@status!29&1^95#9*18@start!29&1^35#9*18@
 sto|1|stop!29&1^63#9*18@
 tes|1|testName!48&25^21#9*210@
-tim|3|time_IR_and_movement!28&5^84#9*50@time_left!27&9^79#9*82@time_IR_only!28&5^81#9*50@
-tur|4|turn_off_music_mode!28&5^65#9*50@turn_on_master_device!28&5^49#9*50@turn_off_master_device!28&5^54#9*50@turn_on_music_mode!28&5^60#9*50@
-wri|1|write_on_state!30&21^28#9*178@
+tim|3|time_left!27&9^79#9*82@time_IR_only!28&5^81#9*50@time_IR_and_movement!28&5^84#9*50@
+tur|4|turn_off_music_mode!28&5^65#9*50@turn_off_master_device!28&5^54#9*50@turn_on_music_mode!28&5^60#9*50@turn_on_master_device!28&5^49#9*50@
+wri|1|write_on_state!30&19^28#9*162@
 -- END TREE
