@@ -115,6 +115,13 @@ def main():
             integration_period = input_int('Enter integration period: ')
             run_sim(integration_period, input_generators)
             write_to_ifile('csvs/test_group.csv', integration_period, input_generators)
+            print ("CSV File Input Gen:")
+            print(input_generators)
+            print ("Integration Period:")
+            print(integration_period)
+            print ("Device Map:")
+            print(device_map)
+            input("CSV Schedule File Written - Press Enter to continue with analysis ...")
             analyze_data('csvs/test_group.csv', integration_period, device_map)
         print()
         if inp == 'q':

@@ -44,7 +44,8 @@ class Test(unittest.TestCase):
 def test_largescale():
     s = Stopwatch()
     integration_factor = 5
-    device_map = device_parser.build_device_map(device_parser.parse_data('test.xml'))
+    #device_map = device_parser.build_device_map(device_parser.parse_data('test.xml'))
+    device_map = device_parser.build_device_map(device_parser.parse_data('xmls/data_grouped.xml'))
     test_size = 10000
     histogram = OrderedDict()
     
