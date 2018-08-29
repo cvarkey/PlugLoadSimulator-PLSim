@@ -2,12 +2,12 @@ MODULES_MANAGER_V2
 APS_scheduler.APS_State|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\APS_scheduler\APS_State.py
 APS_scheduler.Advanced_Power_Strip|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\APS_scheduler\Advanced_Power_Strip.py
 APS_scheduler.__init__|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\APS_scheduler\__init__.py
-APS_scheduler.hard_code_main|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\APS_scheduler\hard_code_main.py
 PlugLoad_Sim.__init__|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\__init__.py
 PlugLoad_Sim.device_parser|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\device_parser.py
 PlugLoad_Sim.device_sim|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\device_sim.py
 PlugLoad_Sim.goody|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\goody.py
 PlugLoad_Sim.graph_data|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\graph_data.py
+PlugLoad_Sim.hard_code_main|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\hard_code_main.py
 PlugLoad_Sim.inputstr_generator|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\inputstr_generator.py
 PlugLoad_Sim.main|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\main.py
 PlugLoad_Sim.math_util|C:\Users\Mike Klopfer\Documents\GitHub\PlugLoadSimulator-PLSim\PLSIMPROG\plugloadsimAPS\PlugLoad_Sim\math_util.py

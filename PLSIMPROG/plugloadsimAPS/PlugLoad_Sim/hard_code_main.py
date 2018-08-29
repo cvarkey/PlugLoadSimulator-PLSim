@@ -2,6 +2,8 @@
 Created on Apr 15, 2016
 
 @author: Klint
+
+#In current hard coded state the LG LED HiDef TV, Microsoft Xbox One, and Dolby Surround must be included in the selected device list or there will be an error!
 '''
 from PlugLoad_Sim.inputstr_generator import make_input_generators, NameGenerator
 from PlugLoad_Sim.goody import input_int, input_str, input_str_with_nummap
@@ -227,6 +229,9 @@ def main():
             
             device_map['aps'] = {'on': 1.5, 'off': 0.0}
 
+            #write_to_ifile('csvs/test_APS.csv', integration_period, list(input_generators.values()))
+            #analyze_data('csvs/test_APS.csv', integration_period, device_map)
+            
             write_to_ifile('../csvs/test_APS.csv', integration_period, list(input_generators.values()))
             analyze_data('../csvs/test_APS.csv', integration_period, device_map)
         print()
