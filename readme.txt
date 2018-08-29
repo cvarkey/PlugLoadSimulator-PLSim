@@ -45,6 +45,7 @@ INSTALLATION DETAILS
 (6) Create a new Project and put in all the files assuming you have them all in a zip
 (7) Alternatively fork on Github @ https://github.com/ksegarra/CalPlug-Power-Usage-Sim (launch version) or https://github.com/CalPlug/PlugLoadSimulator-PLSim (maintained version)
 
+(8) On Luanch verify that the workspace and run configurations are in place.  
 
   	
 INSTRUCTIONS FOR USE
