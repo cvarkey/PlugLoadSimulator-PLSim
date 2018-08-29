@@ -42,10 +42,10 @@ INSTALLATION DETAILS
 		or C:\ProgramData\Miniconda3\python.exe
   	(c) A new screen will pop up check mark all the radio boxes and click OK, make sure to add requested environmental variables.
   	
-(6) Create a new Project and put in all the files assuming you have them all in a zip
-(7) Alternatively fork on Github @ https://github.com/ksegarra/CalPlug-Power-Usage-Sim (launch version) or https://github.com/CalPlug/PlugLoadSimulator-PLSim (maintained version)
+(6) Open or Create a new Project (the PLSIMPROG directory is an eclipse workspace with three projects inside) and put in all the files assuming you have them all in a zip
+(7) Alternatively fork on Github @ https://github.com/ksegarra/CalPlug-Power-Usage-Sim (original launch version) or https://github.com/CalPlug/PlugLoadSimulator-PLSim (current maintained version)
 
-(8) On Luanch verify that the workspace and run configurations are in place.  
+(8) On Luanch verify that the workspace and run configurations are in place.  This can be a common point of concern in developing with Eclipse.  The workspace, start point and interpreter should be in place in the run configurations.
 
   	
 INSTRUCTIONS FOR USE
