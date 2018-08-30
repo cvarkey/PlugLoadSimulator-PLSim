@@ -1,6 +1,6 @@
 from inputstr_generator import make_input_generators, NameGenerator
 from goody import input_int, input_str
-from device_sim import write_to_ifile, analyze_data
+from device_sim import write_to_ifile, write_to_peramfile, read_from_peramfile, analyze_data
 
 import device_parser
 
@@ -115,12 +115,22 @@ def main():
             integration_period = input_int('Enter integration period: ')
             run_sim(integration_period, input_generators)
             write_to_ifile('csvs/test_group.csv', integration_period, input_generators)
+            
+            write_to_peramfile('csvs/run_perams.cfg', integration_period, device_map)
             print ("CSV File Input Gen:")
             print(input_generators)
             print ("Integration Period:")
             print(integration_period)
             print ("Device Map:")
             print(device_map)
+            
+            #template code in place, input parsernot fully implemented
+            #read_back_integration_period, read_back_device_map = read_from_peramfile('csvs/run_perams.cfg')
+            #print ("Read-back Integration Period:")
+            #print(read_back_integration_period)
+            #print ("Read-back Device Map:")
+            #print(read_back_device_map)
+            
             input("CSV Schedule File Written - Press Enter to continue with analysis ...")
             analyze_data('csvs/test_group.csv', integration_period, device_map)
         print()
