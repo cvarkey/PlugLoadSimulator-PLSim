@@ -1,5 +1,5 @@
 #Analysis script for Verdiem data from CalPlug 2014 study
-#Developed by M. Klopfer Aug, 30, 2018 - V1
+#Developed by M. Klopfer Aug 30, 2018 - V1
 
 #Operation:  This script is a stand-alone processor that takes the Verdiem data and formats it into a style used as a .CSV input into the PLSin program.  This script will not actually output a .CSV file its current state, just format the text in a way that can be quickly formatted into the specific PLSim format.   
             #The script reads from a database/table with the following entries:  record_id    subject_identifier    desktop_type    MPID    device    status    int_record    date    day_of_week P1  P2...[There are 96 entries that correspond to 15 minute periods across the day]
