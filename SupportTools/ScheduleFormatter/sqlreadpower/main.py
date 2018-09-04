@@ -1,5 +1,5 @@
 #Analysis script for Verdiem data from CalPlug 2014 study
-#Developed by M. Klopfer Aug 30, 2018 - V1
+#Developed by M. Klopfer Aug 30, 2018 - V1.1
 
 #Operation:  This script is a stand-alone processor that takes the Verdiem data and formats it into a style used as a .CSV input into the PLSin program.  This script will not actually output a .CSV file its current state, just format the text in a way that can be quickly formatted into the specific PLSim format.   
             #The script reads from a database/table with the following entries:  record_id    subject_identifier    desktop_type    MPID    device    status    int_record    date    day_of_week P1  P2...[There are 96 entries that correspond to 15 minute periods across the day]
@@ -15,13 +15,14 @@ from datetime import date
 from datetime import time
 
 #Run Options for Output Formatting
-plsimcompliant= True #Decide if you want the printed output to be PLSim compliant or be formatted for a CSV tyle to enter into Excel or other program that works with CSVs 
-plsimsupressdate = False #Dates help one read material when aligning data, but this must be supressed to be PLSim Compitable
+plsimcompliant= False #Decide if you want the printed output to be PLSim compliant or be formatted for a CSV tyle to enter into Excel or other program that works with CSVs 
+plsimsupressdate = False #Dates must be suppressed for direct PLSim compliance, help one read material when aligning data, but this must be supressed to be PLSim Compitable
 elapsedminortime = False #If true, display Elapsed minutes versus time
+annotatetransitions = True #Will display at the end of each line the number of transitions per row of data (in a given state) for CSV Formatting
 
 # Open database connection
-db = mysql.connector.connect(host="XXXXXXX.calit2.uci.edu",    # host
-                     user="XXXXXX",         # username
+db = mysql.connector.connect(host="XXXXX.calit2.uci.edu",    # host
+                     user="XXXXX",         # username
                      passwd="XXXXXXXX",  # password
                      db="VerdiemStudy")        # DBName
 
@@ -31,7 +32,7 @@ query = ("SELECT * FROM DATA "
          "WHERE subject_identifier = %(s_ID)s AND device = %(dev)s AND (date BETWEEN %(start_DATE)s AND %(end_DATE)s)") #base query
 
 #Query for device states
-query_modifications= {'s_ID': 1,'dev': "User",'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
+query_modifications= {'s_ID': 1,'dev': "CPU",'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
     
 cursor.execute(query, query_modifications) #Process query with variable modifications
 queryreturn = cursor.fetchall() #Fetch all rows with defined query for first state
@@ -69,7 +70,7 @@ def uniqueinlist(tallylist, identifier, names, maxmin):
         # print list
     sys.stdout.write("The current entries in the ")
     sys.stdout.write(str(identifier))
-    sys.stdout.write(" query: ")
+    sys.stdout.write(" field of the query: ")
     sys.stdout.write(names)
     sys.stdout.write(": [ ")
     for x in unique_list:
@@ -127,6 +128,7 @@ if (plsimcompliant == False):
         if ((x<(96*15)-1)): #suppress final comma
             sys.stdout.write(",")
     print () #print newline after the header row is finished
+    
 for rowindex, row in enumerate(queryreturn): #page thru all returned rows from query, also return an index number related to the row
     #now check for the time in each state as a function of each period
     #FIRST STATE: Define the row information with the device and the state in use - First State Evaluated
@@ -137,33 +139,39 @@ for rowindex, row in enumerate(queryreturn): #page thru all returned rows from q
     sys.stdout.write(devicemfgr) #print out each device mfgr name per line as the standard in PLSim
     if (plsimcompliant == False):
         sys.stdout.write(",") #designator used between MFGR and device in PLSim, comment out when using a comma in a non PLSim compliant formatting scheme
-    else:
-        sys.stdout.write(' ') #Used when formatting a non-compliant PLSim CSV file
     sys.stdout.write(devicename)
     sys.stdout.write(",")
     sys.stdout.write(row[stateposition]) #identify the state name from that column in the row
     sys.stdout.write(",")
     i=0 #loop counter for total range of time periods for a single row
+    lastlengthinstate=row[periodstartcolumn] #initialize storage for the first state in the first period of the data
+    transitions=0 #initialize storage for counter of transitions
     for x in range(periodstartcolumn, periodstartcolumn+totalperiods): #page thru each of the data columns per the defined start and total number of these
         lengthinstate = int(row[x])  #This is used to read the value at the index each period: total the time active in the column
+        if (lengthinstate != lastlengthinstate):
+            transitions=transitions+1
+            lastlengthinstate = lengthinstate 
         lengthnotinstate = (periodlength-int(row[x])) #This is used to read the value at the index each period: assuming a known total, subtract to find the time not in the state - there would be multiple check under this for more defined states
         #right now this logic is somewhat blind - there is a very rudimentary logic check for past states, there should be something here to make sure that there is no two states active at the same t
         if "On" in row[stateposition]:   #Identify state by string comparison
                             #need to identify this is an active state
             for a in range(lengthinstate):
                 sys.stdout.write('1') #print out all rows for inspection
-                sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
+                if (plsimcompliant == False):
+                    sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
                 #lastlengthinstate[(x-periodstartcolumn)][a] = 1 #record all times this active state is on
                 #lastdate= row[7].strftime("%B %d, %Y")
             for b in range(lengthnotinstate):
                 sys.stdout.write('0') #print out all rows for inspection
-                sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
+                if (plsimcompliant == False):
+                    sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
             #sys.stdout.write(' ') #add in a space to distinguish between blocks, can be removed as needed, very helpful to turn on in testing and verification
-        else:  #For all other states, the following is validreverse the order as a compliment with this simple logic check!
+        else:  #For all other states, the following is valid - reverse the order as a compliment with this simple logic check!
                
             for d in range(lengthnotinstate):
                 sys.stdout.write('0') #print out all rows for inspection
-                sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
+                if (plsimcompliant == False):
+                    sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
             for c in range(lengthinstate):
                 
                 #check for logic to see if there are two states active at onceS
@@ -175,13 +183,18 @@ for rowindex, row in enumerate(queryreturn): #page thru all returned rows from q
                     #print(a)
                     
                 sys.stdout.write('1') #print out all rows for inspection
-                sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
+                if (plsimcompliant == False):
+                    sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
             #sys.stdout.write(' ') #add in a space to distinguish between blocks, can be removed as needed, very helpful to turn on in testing and verification
         
         i=i+1 #index the loop counter
     #if (lastdate != row[daterow].strftime("%B %d, %Y")): #reset the check array if we have moved on to a set of states on a new date
         #lastlengthinstate = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]] #Reset the state check array
         #lastdate = row[daterow].strftime("%B %d, %Y") #if not equal, update the date to the new one.
+    if (annotatetransitions == True and plsimcompliant == False):
+        sys.stdout.write("Transitions: ")
+        sys.stdout.write(str(transitions))   
+    transitions=0 #Reset transition counter for the next line
     print() #Newline between rows - makes it formatted properly when there is final readout   
     #print(rowindex) #print the row in the query that is currently being accessed - this is helpful for testing 
 
