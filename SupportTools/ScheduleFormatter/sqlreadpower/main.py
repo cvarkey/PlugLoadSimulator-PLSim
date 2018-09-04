@@ -17,7 +17,7 @@ from datetime import time
 #Run Options for Output Formatting
 plsimcompliant= False #Decide if you want the printed output to be PLSim compliant or be formatted for a CSV tyle to enter into Excel or other program that works with CSVs 
 plsimsupressdate = False #Dates help one read material when aligning data, but this must be supressed to be PLSim Compitable
-elapsedminortime = False #If true, display Elapsed minutes versus time
+elapsedminortime = False #If true, display elapsed minutes versus time as the CSV header
 
 # Open database connection
 db = mysql.connector.connect(host="cplamp.calit2.uci.edu",    # host
