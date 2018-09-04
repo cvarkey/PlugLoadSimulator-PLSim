@@ -1,5 +1,5 @@
 #Analysis script for Verdiem data from CalPlug 2014 study
-#Developed by M. Klopfer, 2018
+#Developed by M. Klopfer Aug, 30, 2018 - V1
 
 #Operation:  This script is a stand-alone processor that takes the Verdiem data and formats it into a style used as a .CSV input into the PLSin program.  This script will not actually output a .CSV file its current state, just format the text in a way that can be quickly formatted into the specific PLSim format.   
             #The script reads from a database/table with the following entries:  record_id    subject_identifier    desktop_type    MPID    device    status    int_record    date    day_of_week P1  P2...[There are 96 entries that correspond to 15 minute periods across the day]
@@ -15,14 +15,14 @@ from datetime import date
 from datetime import time
 
 #Run Options for Output Formatting
-plsimcompliant= False #Decide if you want the printed output to be PLSim compliant or be formatted for a CSV tyle to enter into Excel or other program that works with CSVs 
+plsimcompliant= True #Decide if you want the printed output to be PLSim compliant or be formatted for a CSV tyle to enter into Excel or other program that works with CSVs 
 plsimsupressdate = False #Dates help one read material when aligning data, but this must be supressed to be PLSim Compitable
-elapsedminortime = False #If true, display elapsed minutes versus time as the CSV header
+elapsedminortime = False #If true, display Elapsed minutes versus time
 
 # Open database connection
-db = mysql.connector.connect(host="cplamp.calit2.uci.edu",    # host
-                     user="XXXXXXX",         # username
-                     passwd="XXXXXXX",  # password
+db = mysql.connector.connect(host="XXXXXXX.calit2.uci.edu",    # host
+                     user="XXXXXX",         # username
+                     passwd="XXXXXXXX",  # password
                      db="VerdiemStudy")        # DBName
 
 cursor = db.cursor() # Cursor object for database query
@@ -31,7 +31,7 @@ query = ("SELECT * FROM DATA "
          "WHERE subject_identifier = %(s_ID)s AND device = %(dev)s AND (date BETWEEN %(start_DATE)s AND %(end_DATE)s)") #base query
 
 #Query for device states
-query_modifications= {'s_ID': 2,'dev': "User",'start_DATE': "2014-02-30",'end_DATE': "2014-12-30"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
+query_modifications= {'s_ID': 1,'dev': "User",'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
     
 cursor.execute(query, query_modifications) #Process query with variable modifications
 queryreturn = cursor.fetchall() #Fetch all rows with defined query for first state
@@ -46,32 +46,37 @@ totalperiods = 95  #total number of columns devoted to the periods
 periodstartcolumn = 9 #column which the period info starts in
 stateposition = 5 #position of the state/status identifier column
 daterow = 7 #row that date information is placedin
+subjectrow = 1 #Row the subject info is in
 #write the header for the output denoting the sample distinguisher info
 
 #collect and display unique states in the query
+subjecttallylist = [] #total list of states found
 statetallylist = [] #total list of states found
 datetallylist = []  #total list of dates found
 for rowindex, row in enumerate(queryreturn): #go thru query and generate a full list of states from the dataset
     statetallylist.append(row[stateposition])
     datetallylist.append(row[daterow])
+    subjecttallylist.append(row[subjectrow])
 
 
 
-def uniqueinlist(tallylist, names, maxmin):   
+def uniqueinlist(tallylist, identifier, names, maxmin):   
     unique_list = []  # intitalize a null list
     for x in tallylist:
         # check if exists in unique_list or not
         if x not in unique_list:
             unique_list.append(x)
         # print list
-    print("The current entries in the query are: ")
+    sys.stdout.write("The current entries in the ")
+    sys.stdout.write(str(identifier))
+    sys.stdout.write(" query: ")
     sys.stdout.write(names)
     sys.stdout.write(": [ ")
     for x in unique_list:
         sys.stdout.write(str(x)) #print list in a row separated by a comma and space
         sys.stdout.write(" ")
     sys.stdout.write("]")
-    if (maxmin==1):
+    if (maxmin == True):
         print() #End of list new line
         max_value = max(unique_list)
         min_value = min(unique_list)
@@ -85,8 +90,10 @@ def uniqueinlist(tallylist, names, maxmin):
     print() #End of list new line
     print() #End of list new line
 
-uniqueinlist(statetallylist, "Device States", 0) #use the function defined above
-uniqueinlist(datetallylist, "Observation Dates", 1) #use the function defined above
+uniqueinlist(subjecttallylist,"SUBJECT" ,"Research Subject", False) #use the function defined above
+uniqueinlist(statetallylist, "STATES","Device States", False) #use the function defined above
+uniqueinlist(datetallylist,"DATE" ,"Observation Dates", True) #use the function defined above
+
 
 #keep a record of the last state to verify that there are no logic conflicts
 #lastlengthinstate = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
