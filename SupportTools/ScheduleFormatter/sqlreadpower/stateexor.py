@@ -31,9 +31,9 @@ daterow = 7 #row that date information is placedin
 day_of_weekrow = 8 #Day of the Week identifier
 
 # Open database connection
-db = mysql.connector.connect(host="XXXXXXX.calit2.uci.edu",    # host
-                     user="XXXXXXX",         # username
-                     passwd="XXXXXXXX",  # password
+db = mysql.connector.connect(host="XXXXXXXX.calit2.uci.edu",    # host
+                     user="XXXXXXXXX",         # username
+                     passwd="XXXXXXXXX",  # password
                      db="VerdiemStudy")        # DBName
 
 cursor = db.cursor() # Cursor object for database query
@@ -46,6 +46,11 @@ query_modifications= {'s_ID': 1,'start_DATE': "2014-01-01",'end_DATE': "2014-12-
     
 cursor.execute(query, query_modifications) #Process query with variable modifications
 queryreturn = cursor.fetchall() #Fetch all rows with defined query for first state
+
+#define global variables
+resultsreviewcount=0
+idleaverage= 0
+
 
 #Used to search for transitions in the dateset to identify timing:
 # First, 
@@ -131,6 +136,7 @@ for x in datetallylist:
     if x not in datetallylist_unique_list:
         datetallylist_unique_list.append(x) 
         
+        
 #Print out Headers for CSV
 sys.stdout.write("Date,State/Info,")
 for x in range(0, (96*15)): #96 sets of 15 minute periods for all minutes in a 24 hour period
@@ -149,8 +155,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
     ontimelist = []
     activetimelist = []
     xorlist = []
-    
-    
+       
     for rowindex, row in enumerate(queryreturn): #page thru all returned rows from query, also return an index number related to the row
         if ((("Active") in row[stateposition]) or (("On") in row[stateposition])):
             if ((("Active") in row[stateposition]) and (row[daterow] == listeddate)):
@@ -207,7 +212,11 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
                     print (len(ontimelist))
                     print() #Newline between rows - makes it formatted properly when there is final readout   
 
+
+
+    
     if ((len(ontimelist) == len(activetimelist)) and (sum(activetimelist) !=0 or sum(ontimelist) !=0)): #check to see if there is a list for the same day for both active and ON states
+        
         xorstate=[]
         xorwaste=[]
         xorinvalid =[]
@@ -219,10 +228,10 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))
         sys.stdout.write(',')
-        #sys.stdout.write("XOR Both states (valid/invalid),")
+        #sys.stdout.write("XOR Both states (valid/invalid),") #calculate XOR value Raw before doing validity check
         for positionindex in range(0, len(activetimelist)):  #this is calculated but not printed - it is granularly broken down elsewhere
                 xorstate.append(int(ontimelist[positionindex] != activetimelist[positionindex]))  #Calculate Raw XOR State      
-            #    sys.stdout.write(str(xorstate[positionindex]))
+            #    sys.stdout.write(str(xorstate[positionindex])) #Print raw XOR value
              #   sys.stdout.write(',') 
         sys.stdout.write("On Periods (Mask): ")
         sys.stdout.write(',')
@@ -319,6 +328,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(str(xorwastesum))
         sys.stdout.write(', ')
         sys.stdout.write(str(xorwastesum/1440))
+        idleaverage += (xorwastesum/1440)
         print()  
         sys.stdout.write(str(subjecttallylist_unique_list[0]))
         sys.stdout.write(',')
@@ -346,29 +356,32 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         print() #Newline between rows - makes it formatted properly when there is final readout   
         print() #Newline between rows - makes it formatted properly when there is final readout   
         print() #Newline between rows - makes it formatted properly when there is final readout   
-    
-#Logical State Determination - generic template (must be run per day)
-#temp1 = []
-#logicalstatelist = []
-#for positionindex in range(0, len(activetimelist)):
-
-#    if (xorwwaste[positionindex] == 1):
-#        state=0 #Idle
-#    if (activetimelist[positionindex] == 1 and xorwwaste[positionindex] == 0):
-#        state=1 #Active
-#    if (activetimelist[positionindex] == 0 and xorwwaste[positionindex] == 0):
-#        state=2 #Off
-#    else:
-#        state=-1
-    
+        resultsreviewcount+=1 #increment total results returned
+       
+        #Logical State Determination - generic template (must be run per day)
+        #temp1 = []
+        #logicalstatelist = []
+        #for positionindex in range(0, len(activetimelist)):
         
-#        temp1.append(positionindex)
-#        temp1.append(endval)
-#        if (len(results)!= 0):
-#            t= tuple(temp1)
-#            logicalstatelist.insert((positionindex), t)                          
-#print(logicalstatelist)     
+        #    if (xorwwaste[positionindex] == 1):
+        #        state=0 #Idle
+        #    if (activetimelist[positionindex] == 1 and xorwwaste[positionindex] == 0):
+        #        state=1 #Active
+        #    if (activetimelist[positionindex] == 0 and xorwwaste[positionindex] == 0):
+        #        state=2 #Off
+        #    else:
+        #        state=-1
+            
                 
+        #        temp1.append(positionindex)
+        #        temp1.append(endval)
+        #        if (len(results)!= 0):
+        #            t= tuple(temp1)
+        #            logicalstatelist.insert((positionindex), t)                          
+        #print(logicalstatelist)  #Per day state list - need to build list of list for all days   
+        
+
+print("Subject Summary Analysis:")                
 print("Delta (Idle) Summary across all days: ")
 sys.stdout.write(str(subjecttallylist_unique_list[0]))
 sys.stdout.write(',')
@@ -376,10 +389,11 @@ sys.stdout.write("All Days")
 sys.stdout.write(',')
 sys.stdout.write("Idle Delta Summary:")
 sys.stdout.write(',')
-sys.stdout.write(str(finaldeltalist)) 
-print()   
-print() 
-
+sys.stdout.write(str(finaldeltalist))
+print()
+sys.stdout.write("Idle time average across all days: ")
+sys.stdout.write('{:.2%}'.format((idleaverage/resultsreviewcount)))
+print()
 
 def savingsevaluation(inputarray, timersetting):
     savingsarray=[]
@@ -391,27 +405,48 @@ def savingsevaluation(inputarray, timersetting):
             savingsval=0
             savingsarray.append(int(savingsval))
         else:
-            savingsval = newlist[index]-timersetting
+            savingsval = (newlist[index] - timersetting)
             savingsarray.append(int(savingsval))
 
     return [savingsarray]
             
-        
-savingsarrayreturn = savingsevaluation (finaldeltalist, 30)      
-sys.stdout.write("Applied savings:")
-print(savingsarrayreturn)
 
-savingssum = 0 #Initialize the sum counter
-for index in range(0, len(savingsarrayreturn)):
-    savingssum = savingssum + int(savingsarrayreturn[0][index])
-print()
-sys.stdout.write("Total (min) Runtime Saved: ")
-print(str(sum(savingsarrayreturn[0])))
-perday= sum(savingsarrayreturn[0])/len(datetallylist_unique_list)
-print()
-sys.stdout.write("Per day (min) Runtime Saved: ")
-print(str(perday))
-    
-             
+def savingsreporting(analysisvalues, averagebase, deltawatt, energyreport):
+    print()
+    print("++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    for x in analysisvalues:
+        savingsarrayreturn = savingsevaluation (finaldeltalist, x)     
+        sys.stdout.write("Applied savings for ")
+        sys.stdout.write(str(x))
+        sys.stdout.write(" minutes, ")
+        sys.stdout.write(str(savingsarrayreturn))
+        print()
+        savingssum = 0 #Initialize the sum counter
+        for index in range(0, len(savingsarrayreturn)):
+            savingssum = savingssum + int(savingsarrayreturn[0][index])
+        print()
+        sys.stdout.write("Total (min) Runtime Saved:, ")
+        print(str(sum(savingsarrayreturn[0])))
+        perday= (sum(savingsarrayreturn[0])/averagebase)
+        print()
+        sys.stdout.write("Per day (min) Runtime Saved:, ")
+        print(str(perday))
+        sys.stdout.write("Per day (Hr) Runtime Saved:, ")
+        print(str(perday/60))
+        if (energyreport == True):
+            runtimehr= perday/60
+            sys.stdout.write("Projected per day Energy Saved considering a delta of ")
+            sys.stdout.write(str(deltawatt))
+            sys.stdout.write(" W -- presented in (kWh/day):, ")
+            sys.stdout.write(str((deltawatt/1000)*runtimehr))
+            print()
+            sys.stdout.write("Simple Schedule Projected per Year Energy Saved (same W) -- presented in (kWh/year):, ")
+            sys.stdout.write(str(((deltawatt/1000)*runtimehr)*365))
+            print()
+        print ("______________________________________________")
+        
+savingsreporting([5,10,15,20,25,30,35,40,45,60],resultsreviewcount,45,True) 
+           
+           
 cursor.close()
 db.close()  #close DB connection
