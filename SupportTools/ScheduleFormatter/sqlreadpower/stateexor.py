@@ -1,7 +1,9 @@
 #Analysis script for Verdiem data from CalPlug 2014 study
 #Developed by M. Klopfer Aug 30, 2018 - V1.1
 
-#Operation:  This script is a stand-alone processor that takes the Verdiem data and formats it into a style used as a .CSV input for post analysis - this scrip breaks data to categorize states and transitions
+#Operation:  This script is a stand-alone processor that takes the Verdiem data and formats it into a style used as a .CSV input into the PLSin program.  This script will not actually output a .CSV file its current state, just format the text in a way that can be quickly formatted into the specific PLSim format.   
+            #The script reads from a database/table with the following entries:  record_id    subject_identifier    desktop_type    MPID    device    status    int_record    date    day_of_week P1  P2...[There are 96 entries that correspond to 15 minute periods across the day]
+
 #Dependencies and setup considerations:  This program uses Miniconda/Eclipse in development and is within an Eclipse workshop - it shares identical dependencies as PLSim:  https://github.com/CalPlug/PlugLoadSimulator-PLSim
 #Note, if the console is not large enough in Eclipse to display the return, consider the following:  https://stackoverflow.com/questions/2600653/adjusting-eclipse-console-size
 
@@ -29,8 +31,8 @@ daterow = 7 #row that date information is placedin
 day_of_weekrow = 8 #Day of the Week identifier
 
 # Open database connection
-db = mysql.connector.connect(host="XXXXXXX.calit2.uci.edu",    # host
-                     user="XXXXXXX",         # username
+db = mysql.connector.connect(host="XXXXX.calit2.uci.edu",    # host
+                     user="XXXXXXXX",         # username
                      passwd="XXXXXXXXX",  # password
                      db="VerdiemStudy")        # DBName
 
@@ -40,7 +42,7 @@ query = ("SELECT * FROM DATA "
          "WHERE subject_identifier = %(s_ID)s AND (date BETWEEN %(start_DATE)s AND %(end_DATE)s)") #base query
 
 #Query for device states
-query_modifications= {'s_ID': 2,'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
+query_modifications= {'s_ID': 1,'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
     
 cursor.execute(query, query_modifications) #Process query with variable modifications
 queryreturn = cursor.fetchall() #Fetch all rows with defined query for first state
@@ -48,52 +50,59 @@ queryreturn = cursor.fetchall() #Fetch all rows with defined query for first sta
 #Used to search for transitions in the dateset to identify timing:
 # First, 
 
-def transitionsearch(inputarray):
+def transitionsearch(inputarray, mask):  #input array used for comparison and a mask of always
     results = []
-    resultswithstartandstop= []
-    option1start = [(0,0)]
-    option2start =[(0,1)]     
-    optionend = [(0,0)]
+    resultswithstart= []
+    resultswithstartandstop = []
+    option1start = ((0,0))
+    option2start = ((0,1))   
+    updatedoptionend = []  #needs to be a list, converted to tuple later upon insert
 
     
     deltaidle = []
     deltaactive = []
+    deltaactiveOn = []
+    deltaactiveOff = []
     deltacombined = []
 
     results=[(n+1, b) for (n, (a,b)) in enumerate(zip(inputarray,inputarray[1:])) if a!=b]  #Return the point of transition (to the new value) and the prior value to the transition as the function return  
-    resultswithstartandstop.extend(results)
-    
+    resultswithstart.extend(results)
     
     if (inputarray[0]==inputarray[1]):  #take care of the 0 case and add it to the array "resultswithstart"
         if (inputarray[0]==0):
-            resultswithstartandstop.insert(0, option1start)
+            resultswithstart.insert(0, tuple(option1start))
         if (inputarray[0]==1):
-            resultswithstartandstop.insert(0, option2start)
+            resultswithstart.insert(0, tuple(option2start))
             
+    resultswithstartandstop.extend(resultswithstart)
+    
     if (inputarray[len(inputarray)-2]==inputarray[len(inputarray)-1]):  #take care of the 0 case 
         if (inputarray[len(inputarray)-1]==1):
             endval=0
             
-        if (inputarray[len(inputarray)-1]==1):
-            endval=0
+        if (inputarray[len(inputarray)-1]==0):
+            endval=1
             
-        optionend[0]= ((len(inputarray)),(inputarray[len(inputarray)-1]))
-        if (len(resultswithstartandstop)!=0):
-            resultswithstartandstop.extend(optionend)
-    #fixes the o case for the "results" array when calculating specific states
-    if (results[0][1] == 0): #take care of case 0 for the inactive scenarios
-        deltaidle.append(results[0][0])
-        deltacombined.append(results[0][0])
-        
-    for x in range(0, len(results)-1):     
-        deltacombined.append(results[x+1][0] - results[x][0])
-        if (results[x][1] == 1): #count transition to idle and period until activity comes back
-            deltaidle.append(results[x+1][0] - results[x][0])
-        if (results[x][1] == 0) :
-            deltaactive.append(results[x+1][0] - results[x][0])
+        updatedoptionend.append(len(inputarray)-1)
+        updatedoptionend.append(endval)
+        if (len(results)!= 0):
+            t= tuple(updatedoptionend)
+            resultswithstartandstop.insert((len(inputarray)-1), t)   
+           
+    for x in range(0, len(resultswithstartandstop)-1):     
+        deltacombined.append(resultswithstartandstop[x+1][0] - resultswithstartandstop[x][0])
+        if (resultswithstartandstop[x][1] == 1): #count transition to idle and period until activity comes back
+            deltaidle.append(resultswithstartandstop[x+1][0] - resultswithstartandstop[x][0])
+        if (resultswithstartandstop[x][1] == 0 and mask[resultswithstartandstop[x][0]] == 0):
+            deltaactiveOff.append(resultswithstartandstop[x+1][0] - resultswithstartandstop[x][0])
+        if (resultswithstartandstop[x][1] == 0):    
+            deltaactive.append(resultswithstartandstop[x+1][0] - resultswithstartandstop[x][0])
+        if (resultswithstartandstop[x][1] == 0 and mask[resultswithstartandstop[x][0]] == 1):    
+            deltaactiveOn.append(resultswithstartandstop[x+1][0] - resultswithstartandstop[x][0])
+            
     
    
-    return [resultswithstartandstop, deltaidle, deltaactive, deltacombined, results]
+    return [resultswithstartandstop, deltaidle, deltaactive, deltacombined, deltaactiveOff, deltaactiveOn, results, resultswithstart]
 
 #collect and display unique states in the query
 subjecttallylist = [] #total list of states found
@@ -204,6 +213,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         xorinvalid =[]
         activeperiods=[]
         offperiods=[]
+        logicalstate = []
         print() #Newline between rows - makes it formatted properly when there is final readout   
         sys.stdout.write(str(subjecttallylist_unique_list[0]))
         sys.stdout.write(',')
@@ -261,9 +271,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))  
         sys.stdout.write(',') 
         returnresultsXORWaste=[]
-        returnresultsXORWaste = transitionsearch(xorwaste) #read back in transition points
-        sys.stdout.write(str(subjecttallylist_unique_list[0]))
-        sys.stdout.write(',')
+        returnresultsXORWaste = transitionsearch(xorwaste, activetimelist) #read back in transition points
         sys.stdout.write("Transition Points [Date Summary]:,")
         print(returnresultsXORWaste[0], sep=", ")
         sys.stdout.write(str(subjecttallylist_unique_list[0]))
@@ -276,8 +284,20 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))  
         sys.stdout.write(',')
-        sys.stdout.write("Transition Deltas (Active)[Date Summary]:,")
+        sys.stdout.write("Transition Deltas (On-Active/Off)[Date Summary]:,")
         print(returnresultsXORWaste[2], sep=", ")
+        sys.stdout.write(str(subjecttallylist_unique_list[0]))
+        sys.stdout.write(',')
+        sys.stdout.write(listeddate.strftime("%m/%d/%y"))
+        sys.stdout.write(',')
+        sys.stdout.write("Transition Deltas (Off)[Date Summary]:,")
+        print(returnresultsXORWaste[4], sep=", ")
+        sys.stdout.write(str(subjecttallylist_unique_list[0]))
+        sys.stdout.write(',')
+        sys.stdout.write(listeddate.strftime("%m/%d/%y"))
+        sys.stdout.write(',')
+        sys.stdout.write("Transition Deltas (On-Active)[Date Summary]:,")
+        print(returnresultsXORWaste[5], sep=", ")
         sys.stdout.write(str(subjecttallylist_unique_list[0]))
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))  
@@ -289,25 +309,66 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))
         sys.stdout.write(',')
-        sys.stdout.write("XOR Both states [Date Summary]: ")
         xorsum=0    
         for positionindex in range(0, len(xorstate)):
             xorsum = xorsum + int(xorstate[positionindex])
-        sys.stdout.write(str(xorsum))
+        sys.stdout.write("XOR Active-Idle State sum [Date Summary]: ")
+        xorwastesum=0    
+        for positionindex in range(0, len(xorwaste)):
+            xorwastesum = xorwastesum + int(xorwaste[positionindex])
+        sys.stdout.write(str(xorwastesum))
+        sys.stdout.write(', ')
+        sys.stdout.write(str(xorwastesum/1440))
         print()  
         sys.stdout.write(str(subjecttallylist_unique_list[0]))
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))
         sys.stdout.write(',')
-        sys.stdout.write("XOR Active/Idle State sum [Date Summary]: ")
-        xorwastesum=0    
-        for positionindex in range(0, len(xorwaste)):
-            xorwastesum = xorwastesum + int(xorwaste[positionindex])
-        sys.stdout.write(str(xorwastesum))
+        sys.stdout.write("Active-On State sum [Date Summary]: ")
+        activeonstate=0    
+        for positionindex in range(0, len(returnresultsXORWaste[5])):
+            activeonstate = activeonstate + int(returnresultsXORWaste[5][positionindex])
+        sys.stdout.write(str(activeonstate))
+        sys.stdout.write(', ')
+        sys.stdout.write(str(activeonstate/1440))
+        print()  
+        sys.stdout.write(str(subjecttallylist_unique_list[0]))
+        sys.stdout.write(',')
+        sys.stdout.write(listeddate.strftime("%m/%d/%y"))
+        sys.stdout.write(',')
+        sys.stdout.write("Off State sum [Date Summary]: ")
+        activeoffstate=0    
+        for positionindex in range(0, len(returnresultsXORWaste[4])):
+            activeoffstate = activeoffstate + int(returnresultsXORWaste[4][positionindex])
+        sys.stdout.write(str(activeoffstate))
+        sys.stdout.write(', ')
+        sys.stdout.write(str(activeoffstate/1440))
         print() #Newline between rows - makes it formatted properly when there is final readout   
         print() #Newline between rows - makes it formatted properly when there is final readout   
         print() #Newline between rows - makes it formatted properly when there is final readout   
     
+#Logical State Determination - generic template (must be run per day)
+#temp1 = []
+#logicalstatelist = []
+#for positionindex in range(0, len(activetimelist)):
+
+#    if (xorwwaste[positionindex] == 1):
+#        state=0 #Idle
+#    if (activetimelist[positionindex] == 1 and xorwwaste[positionindex] == 0):
+#        state=1 #Active
+#    if (activetimelist[positionindex] == 0 and xorwwaste[positionindex] == 0):
+#        state=2 #Off
+#    else:
+#        state=-1
+    
+        
+#        temp1.append(positionindex)
+#        temp1.append(endval)
+#        if (len(results)!= 0):
+#            t= tuple(temp1)
+#            logicalstatelist.insert((positionindex), t)                          
+#print(logicalstatelist)     
+                
 print("Delta (Idle) Summary across all days: ")
 sys.stdout.write(str(subjecttallylist_unique_list[0]))
 sys.stdout.write(',')
@@ -315,6 +376,42 @@ sys.stdout.write("All Days")
 sys.stdout.write(',')
 sys.stdout.write("Idle Delta Summary:")
 sys.stdout.write(',')
-sys.stdout.write(str(finaldeltalist))             
+sys.stdout.write(str(finaldeltalist)) 
+print()   
+print() 
+
+
+def savingsevaluation(inputarray, timersetting):
+    savingsarray=[]
+
+    newlist=[int(x) for xs in inputarray for x in xs]
+    #print(newlist)
+    for index in range(0, (len(newlist)-1)):
+        if (newlist[index] < timersetting):  #no negative savings
+            savingsval=0
+            savingsarray.append(int(savingsval))
+        else:
+            savingsval = newlist[index]-timersetting
+            savingsarray.append(int(savingsval))
+
+    return [savingsarray]
+            
+        
+savingsarrayreturn = savingsevaluation (finaldeltalist, 30)      
+sys.stdout.write("Applied savings:")
+print(savingsarrayreturn)
+
+savingssum = 0 #Initialize the sum counter
+for index in range(0, len(savingsarrayreturn)):
+    savingssum = savingssum + int(savingsarrayreturn[0][index])
+print()
+sys.stdout.write("Total (min) Runtime Saved: ")
+print(str(sum(savingsarrayreturn[0])))
+perday= sum(savingsarrayreturn[0])/len(datetallylist_unique_list)
+print()
+sys.stdout.write("Per day (min) Runtime Saved: ")
+print(str(perday))
+    
+             
 cursor.close()
 db.close()  #close DB connection
