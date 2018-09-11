@@ -31,9 +31,9 @@ daterow = 7 #row that date information is placedin
 day_of_weekrow = 8 #Day of the Week identifier
 
 # Open database connection
-db = mysql.connector.connect(host="XXXXX.calit2.uci.edu",    # host
-                     user="XXXXXXXX",         # username
-                     passwd="XXXXXXXXX",  # password
+db = mysql.connector.connect(host="XXXXXXX.calit2.uci.edu",    # host
+                     user="XXXXXXX",         # username
+                     passwd="XXXXXXXX",  # password
                      db="VerdiemStudy")        # DBName
 
 cursor = db.cursor() # Cursor object for database query
@@ -312,7 +312,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         xorsum=0    
         for positionindex in range(0, len(xorstate)):
             xorsum = xorsum + int(xorstate[positionindex])
-        sys.stdout.write("XOR Active-Idle State sum [Date Summary]: ")
+        sys.stdout.write("XOR Active-Idle State sum [Date Summary]:, ")
         xorwastesum=0    
         for positionindex in range(0, len(xorwaste)):
             xorwastesum = xorwastesum + int(xorwaste[positionindex])
@@ -324,7 +324,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))
         sys.stdout.write(',')
-        sys.stdout.write("Active-On State sum [Date Summary]: ")
+        sys.stdout.write("Active-On State sum [Date Summary]:, ")
         activeonstate=0    
         for positionindex in range(0, len(returnresultsXORWaste[5])):
             activeonstate = activeonstate + int(returnresultsXORWaste[5][positionindex])
@@ -336,7 +336,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))
         sys.stdout.write(',')
-        sys.stdout.write("Off State sum [Date Summary]: ")
+        sys.stdout.write("Off State sum [Date Summary]:, ")
         activeoffstate=0    
         for positionindex in range(0, len(returnresultsXORWaste[4])):
             activeoffstate = activeoffstate + int(returnresultsXORWaste[4][positionindex])
