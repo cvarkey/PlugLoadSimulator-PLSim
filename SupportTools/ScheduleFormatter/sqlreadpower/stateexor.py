@@ -30,13 +30,14 @@ daterow = 7 #row that date information is placedin
 day_of_weekrow = 8 #Day of the Week identifier
 
 #define global variables
-resultsreviewcount=0
-idleaverage= 0
+resultsreviewcount = 0
+idleaverage = 0
+minutebaseinday = 1425 #Time base for min in day, Verdiem based periods= 1425, alternatively 1440
 
 # Open database connection
-db = mysql.connector.connect(host="XXXXXXX.calit2.uci.edu",    # host
-                     user="XXXXXXXX",         # username
-                     passwd="XXXXXXXXX",  # password
+db = mysql.connector.connect(host="XXXXX.calit2.uci.edu",    # host
+                     user="XXXXXX",         # username
+                     passwd="XXXXXXXX",  # password
                      db="VerdiemStudy")        # DBName
 
 cursor = db.cursor() # Cursor object for database query
@@ -44,7 +45,7 @@ cursor = db.cursor() # Cursor object for database query
 query = ("SELECT * FROM DATA "
          "WHERE subject_identifier = %(s_ID)s AND (date BETWEEN %(start_DATE)s AND %(end_DATE)s)") #base query
 
-#Query for device states
+#Query for device states - change subject number to view other subjects
 query_modifications= {'s_ID': 1,'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
     
 cursor.execute(query, query_modifications) #Process query with variable modifications
@@ -258,7 +259,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(',')      
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))
         sys.stdout.write(',')
-        sys.stdout.write("XOR Active/Idle State (Mask):,")
+        sys.stdout.write("XOR Active-Idle State (Mask):,")
         for positionindex in range(0, len(activetimelist)):
             xorwaste.append(int(xorstate[positionindex] == 1 and ontimelist[positionindex] == 1))
             sys.stdout.write((str(xorwaste[positionindex])))
@@ -328,8 +329,8 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
             xorwastesum = xorwastesum + int(xorwaste[positionindex])
         sys.stdout.write(str(xorwastesum))
         sys.stdout.write(', ')
-        sys.stdout.write(str(xorwastesum/1440))
-        idleaverage += (xorwastesum/1440)
+        sys.stdout.write(str(xorwastesum/minutebaseinday))
+        idleaverage += (xorwastesum/minutebaseinday)
         print()  
         sys.stdout.write(str(subjecttallylist_unique_list[0]))
         sys.stdout.write(',')
@@ -341,7 +342,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
             activeonstate = activeonstate + int(returnresultsXORWaste[5][positionindex])
         sys.stdout.write(str(activeonstate))
         sys.stdout.write(', ')
-        sys.stdout.write(str(activeonstate/1440))
+        sys.stdout.write(str(activeonstate/minutebaseinday))
         print()  
         sys.stdout.write(str(subjecttallylist_unique_list[0]))
         sys.stdout.write(',')
@@ -353,7 +354,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
             activeoffstate = activeoffstate + int(returnresultsXORWaste[4][positionindex])
         sys.stdout.write(str(activeoffstate))
         sys.stdout.write(', ')
-        sys.stdout.write(str(activeoffstate/1440))
+        sys.stdout.write(str(activeoffstate/minutebaseinday))
         print() #Newline between rows - makes it formatted properly when there is final readout   
         print() #Newline between rows - makes it formatted properly when there is final readout   
         print() #Newline between rows - makes it formatted properly when there is final readout   
@@ -381,7 +382,11 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         #            logicalstatelist.insert((positionindex), t)                          
         #print(logicalstatelist)  #Per day state list - need to build list of list for all days   
         
-
+print()
+print()
+print()
+print()
+print(",,===================================================")
 print(",,Subject Summary Analysis:")                
 print(",,Delta (Idle) Summary across all days: ")
 sys.stdout.write(str(subjecttallylist_unique_list[0]))
@@ -392,7 +397,7 @@ sys.stdout.write("Idle Delta Summary:")
 sys.stdout.write(',')
 sys.stdout.write(str(finaldeltalist))
 print()
-sys.stdout.write(",,Idle time average across all days: ")
+sys.stdout.write(",,Idle time average across all days:,")
 sys.stdout.write('{:.2%}'.format((idleaverage/resultsreviewcount)))
 print()
 
@@ -413,42 +418,58 @@ def savingsevaluation(inputarray, timersetting):
     return [savingsarray]
             
 
-def savingsreporting(analysisvalues, averagebase, deltawatt, energyreport):
+def savingsreporting(analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, energyreport):
+    deltawatt = activecomputerwatt - standbycomputerwatt
+    deltawattaccessories = activeaccessorieswatt - standbyaccessorieswatt 
+    if (accessorycontrol==False):
+        deltawattaccessories=0
+    print()
     print()
     print(",,++++++++++++++++++++++++++++++++++++++++++++++++++++")
     for x in analysisvalues:
+        print()
         savingsarrayreturn = savingsevaluation (finaldeltalist, x)     
-        sys.stdout.write(",,Applied savings for ")
+        sys.stdout.write(",,Applied savings for intervention at ")
         sys.stdout.write(str(x))
-        sys.stdout.write(" minutes, ")
+        sys.stdout.write(" minutes:,")
         sys.stdout.write(str(savingsarrayreturn))
         print()
         savingssum = 0 #Initialize the sum counter
         for index in range(0, len(savingsarrayreturn)):
             savingssum = savingssum + int(savingsarrayreturn[0][index])
-        print()
-        sys.stdout.write(",,Total (min) Runtime Saved:, ")
+        sys.stdout.write(",,Total (min) Runtime Saved:,")
         print(str(sum(savingsarrayreturn[0])))
         perday= (sum(savingsarrayreturn[0])/averagebase)
-        print()
-        sys.stdout.write(",,Per day (min) Runtime Saved:, ")
+        sys.stdout.write(",,Per day (min) Runtime Saved:,")
         print(str(perday))
-        sys.stdout.write(",,Per day (Hr) Runtime Saved:, ")
+        sys.stdout.write(",,Per day (Hr) Runtime Saved:,")
         print(str(perday/60))
         if (energyreport == True):
             runtimehr= perday/60
             sys.stdout.write(",,Projected per day Energy Saved considering a delta of ")
             sys.stdout.write(str(deltawatt))
-            sys.stdout.write(" W -- presented in (kWh/day):, ")
-            sys.stdout.write(str((deltawatt/1000)*runtimehr))
+            sys.stdout.write(" W and ")
+            sys.stdout.write(str(deltawattaccessories))
+            sys.stdout.write(" W controlled accessories ")
+            sys.stdout.write("-- presented in (kWh/day):, ")
+            sys.stdout.write(str(((deltawatt+deltawattaccessories)/1000)*runtimehr))
             print()
-            sys.stdout.write(",,Simple Schedule Projected per Year Energy Saved (same W) -- presented in (kWh/year):, ")
-            sys.stdout.write(str(((deltawatt/1000)*runtimehr)*365))
+            sys.stdout.write(",,Weekday only (Weekends Off -- No Savings) Schedule Projected per Year Energy Saved (same W load) -- presented in (kWh/year):,")
+            sys.stdout.write(str((((deltawatt+deltawattaccessories)/1000)*runtimehr)*261))
+            print()
+            sys.stdout.write(",,Identical Schedule Projected per full Year Energy Saved (same W load) -- presented in (kWh/year):,")
+            sys.stdout.write(str((((deltawatt+deltawattaccessories)/1000)*runtimehr)*365))
+            print()
+            sys.stdout.write(",,Weekday and all Weekends -- Savings) Schedule Projected per Year Energy Saved (same W load) -- presented in (kWh/year):,")
+            sys.stdout.write(str(((((deltawatt+deltawattaccessories)/1000)*runtimehr)*261)+(104*24*(deltawatt/1000))))
+            print()
+            sys.stdout.write(",,Max-Min Estimate Ratio (max/min kWh):,")
+            sys.stdout.write(str((((((deltawatt+deltawattaccessories)/1000)*runtimehr)*261)+(104*24*(deltawatt/1000)))/((((deltawatt+deltawattaccessories)/1000)*runtimehr+.0000001)*261)))  #calculate ratio - add in a very small coefficient to avoid div by zero
             print()
         print (",,______________________________________________")
         
-savingsreporting([5,10,15,20,25,30,35,40,45,60],resultsreviewcount,45,True) 
-           
-           
+savingsreporting([5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,1,51,0,0,False,True) 
+print() 
+   
 cursor.close()
 db.close()  #close DB connection
