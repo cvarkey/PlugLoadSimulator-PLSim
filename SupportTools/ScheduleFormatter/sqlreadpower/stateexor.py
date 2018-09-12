@@ -1,6 +1,5 @@
-#Analysis script for Verdiem data from CalPlug 2014 study
-#Developed by M. Klopfer Aug 30, 2018 - V1.1
-
+#Analysis script for Verdiem data from CalPlug 2014 study - Idle Time Reporter using XOR
+#Developed by M. Klopfer Sept 11, 2018 - V1.5
 #Operation:  This script is a stand-alone processor that takes the Verdiem data and formats it into a style used as a .CSV input into the PLSin program.  This script will not actually output a .CSV file its current state, just format the text in a way that can be quickly formatted into the specific PLSim format.   
             #The script reads from a database/table with the following entries:  record_id    subject_identifier    desktop_type    MPID    device    status    int_record    date    day_of_week P1  P2...[There are 96 entries that correspond to 15 minute periods across the day]
 
@@ -30,9 +29,13 @@ int_recordrow = 6
 daterow = 7 #row that date information is placedin
 day_of_weekrow = 8 #Day of the Week identifier
 
+#define global variables
+resultsreviewcount=0
+idleaverage= 0
+
 # Open database connection
-db = mysql.connector.connect(host="XXXXXXXX.calit2.uci.edu",    # host
-                     user="XXXXXXXXX",         # username
+db = mysql.connector.connect(host="XXXXXXX.calit2.uci.edu",    # host
+                     user="XXXXXXXX",         # username
                      passwd="XXXXXXXXX",  # password
                      db="VerdiemStudy")        # DBName
 
@@ -47,9 +50,7 @@ query_modifications= {'s_ID': 1,'start_DATE': "2014-01-01",'end_DATE': "2014-12-
 cursor.execute(query, query_modifications) #Process query with variable modifications
 queryreturn = cursor.fetchall() #Fetch all rows with defined query for first state
 
-#define global variables
-resultsreviewcount=0
-idleaverage= 0
+
 
 
 #Used to search for transitions in the dateset to identify timing:
@@ -88,11 +89,11 @@ def transitionsearch(inputarray, mask):  #input array used for comparison and a 
         if (inputarray[len(inputarray)-1]==0):
             endval=1
             
-        updatedoptionend.append(len(inputarray)-1)
+        updatedoptionend.append(len(inputarray)) #rem-1
         updatedoptionend.append(endval)
         if (len(results)!= 0):
             t= tuple(updatedoptionend)
-            resultswithstartandstop.insert((len(inputarray)-1), t)   
+            resultswithstartandstop.insert((len(inputarray)), t)   #rem-1
            
     for x in range(0, len(resultswithstartandstop)-1):     
         deltacombined.append(resultswithstartandstop[x+1][0] - resultswithstartandstop[x][0])
@@ -138,7 +139,7 @@ for x in datetallylist:
         
         
 #Print out Headers for CSV
-sys.stdout.write("Date,State/Info,")
+sys.stdout.write("Subject,Date,State/Info,")
 for x in range(0, (96*15)): #96 sets of 15 minute periods for all minutes in a 24 hour period
     timeholder = datetime.today() #initialize datetimeobject
     timeholder = (datetime.combine(date.today(), time(0,0,0)) + timedelta(minutes=1*x))
@@ -181,7 +182,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
                             activetimelist.append(0)
                 
                 if ((("Active") in row[stateposition]) and (row[daterow] == listeddate)):    
-                    print (len(activetimelist))
+                    #print (len(activetimelist))  #print number of actions, helpful for debug
                     print() #Newline between rows - makes it formatted properly when there is final readout   
     
     
@@ -209,7 +210,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
                             ontimelist.append(0)
                 
                 if ((("On") in row[stateposition]) and (row[daterow] == listeddate)):    
-                    print (len(ontimelist))
+                    #sprint (len(ontimelist))  #print number of actions, helpful for debug
                     print() #Newline between rows - makes it formatted properly when there is final readout   
 
 
@@ -321,7 +322,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         xorsum=0    
         for positionindex in range(0, len(xorstate)):
             xorsum = xorsum + int(xorstate[positionindex])
-        sys.stdout.write("XOR Active-Idle State sum [Date Summary]:, ")
+        sys.stdout.write("XOR Active-Idle State sum [Date Summary](total -- day %):, ")
         xorwastesum=0    
         for positionindex in range(0, len(xorwaste)):
             xorwastesum = xorwastesum + int(xorwaste[positionindex])
@@ -334,7 +335,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))
         sys.stdout.write(',')
-        sys.stdout.write("Active-On State sum [Date Summary]:, ")
+        sys.stdout.write("Active-On State sum [Date Summary](total -- day %):, ")
         activeonstate=0    
         for positionindex in range(0, len(returnresultsXORWaste[5])):
             activeonstate = activeonstate + int(returnresultsXORWaste[5][positionindex])
@@ -346,7 +347,7 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         sys.stdout.write(',')
         sys.stdout.write(listeddate.strftime("%m/%d/%y"))
         sys.stdout.write(',')
-        sys.stdout.write("Off State sum [Date Summary]:, ")
+        sys.stdout.write("Off State sum [Date Summary](total -- day %):, ")
         activeoffstate=0    
         for positionindex in range(0, len(returnresultsXORWaste[4])):
             activeoffstate = activeoffstate + int(returnresultsXORWaste[4][positionindex])
@@ -381,8 +382,8 @@ for listeddate in datetallylist_unique_list: # display entries for a single date
         #print(logicalstatelist)  #Per day state list - need to build list of list for all days   
         
 
-print("Subject Summary Analysis:")                
-print("Delta (Idle) Summary across all days: ")
+print(",,Subject Summary Analysis:")                
+print(",,Delta (Idle) Summary across all days: ")
 sys.stdout.write(str(subjecttallylist_unique_list[0]))
 sys.stdout.write(',')
 sys.stdout.write("All Days")
@@ -391,7 +392,7 @@ sys.stdout.write("Idle Delta Summary:")
 sys.stdout.write(',')
 sys.stdout.write(str(finaldeltalist))
 print()
-sys.stdout.write("Idle time average across all days: ")
+sys.stdout.write(",,Idle time average across all days: ")
 sys.stdout.write('{:.2%}'.format((idleaverage/resultsreviewcount)))
 print()
 
@@ -400,10 +401,11 @@ def savingsevaluation(inputarray, timersetting):
 
     newlist=[int(x) for xs in inputarray for x in xs]
     #print(newlist)
-    for index in range(0, (len(newlist)-1)):
+    for index in range(0, (len(newlist))):
         if (newlist[index] < timersetting):  #no negative savings
             savingsval=0
             savingsarray.append(int(savingsval))
+            
         else:
             savingsval = (newlist[index] - timersetting)
             savingsarray.append(int(savingsval))
@@ -413,10 +415,10 @@ def savingsevaluation(inputarray, timersetting):
 
 def savingsreporting(analysisvalues, averagebase, deltawatt, energyreport):
     print()
-    print("++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    print(",,++++++++++++++++++++++++++++++++++++++++++++++++++++")
     for x in analysisvalues:
         savingsarrayreturn = savingsevaluation (finaldeltalist, x)     
-        sys.stdout.write("Applied savings for ")
+        sys.stdout.write(",,Applied savings for ")
         sys.stdout.write(str(x))
         sys.stdout.write(" minutes, ")
         sys.stdout.write(str(savingsarrayreturn))
@@ -425,25 +427,25 @@ def savingsreporting(analysisvalues, averagebase, deltawatt, energyreport):
         for index in range(0, len(savingsarrayreturn)):
             savingssum = savingssum + int(savingsarrayreturn[0][index])
         print()
-        sys.stdout.write("Total (min) Runtime Saved:, ")
+        sys.stdout.write(",,Total (min) Runtime Saved:, ")
         print(str(sum(savingsarrayreturn[0])))
         perday= (sum(savingsarrayreturn[0])/averagebase)
         print()
-        sys.stdout.write("Per day (min) Runtime Saved:, ")
+        sys.stdout.write(",,Per day (min) Runtime Saved:, ")
         print(str(perday))
-        sys.stdout.write("Per day (Hr) Runtime Saved:, ")
+        sys.stdout.write(",,Per day (Hr) Runtime Saved:, ")
         print(str(perday/60))
         if (energyreport == True):
             runtimehr= perday/60
-            sys.stdout.write("Projected per day Energy Saved considering a delta of ")
+            sys.stdout.write(",,Projected per day Energy Saved considering a delta of ")
             sys.stdout.write(str(deltawatt))
             sys.stdout.write(" W -- presented in (kWh/day):, ")
             sys.stdout.write(str((deltawatt/1000)*runtimehr))
             print()
-            sys.stdout.write("Simple Schedule Projected per Year Energy Saved (same W) -- presented in (kWh/year):, ")
+            sys.stdout.write(",,Simple Schedule Projected per Year Energy Saved (same W) -- presented in (kWh/year):, ")
             sys.stdout.write(str(((deltawatt/1000)*runtimehr)*365))
             print()
-        print ("______________________________________________")
+        print (",,______________________________________________")
         
 savingsreporting([5,10,15,20,25,30,35,40,45,60],resultsreviewcount,45,True) 
            
