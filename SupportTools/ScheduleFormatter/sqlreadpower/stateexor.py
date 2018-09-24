@@ -8,16 +8,18 @@
 
 import mysql.connector
 import sys
-from datetime import timedelta
-from datetime import datetime
-from datetime import date
-from datetime import time
+import calendar
+from datetime import timedelta, datetime, date, time
+from time import mktime
+
 
 #Run Options for Output Formatting
 elapsedminortime=True #Print headers as time (False) or minutes since 00:00 (True)
+writetosummarydb = False #Option allows summary to be written to a summary table in the database
+dbrecordpost = 0  #counter for posted records
 finaldeltalist =[] #holder for the total collected delta values across all days
 periodlength=15  #assume a standard 15 min period length
-totalperiods = 95  #total number of columns devoted to the periods
+totalperiods = 96  #total number of columns devoted to the periods
 periodstartcolumn = 9 #column which the period info starts in
 record_idrow = 0 #position original identifier is in
 subjectrow = 1 #Row the subject info is in
@@ -29,34 +31,21 @@ int_recordrow = 6
 daterow = 7 #row that date information is placedin
 day_of_weekrow = 8 #Day of the Week identifier
 
+
 #define global variables
 resultsreviewcount = 0
 idleaverage = 0
+perdayidleaverage = 0
 minutebaseinday = 1425 #Time base for min in day, Verdiem based periods= 1425, alternatively 1440
 
-# Open database connection
-db = mysql.connector.connect(host="XXXXX.calit2.uci.edu",    # host
-                     user="XXXXXX",         # username
-                     passwd="XXXXXXXX",  # password
-                     db="VerdiemStudy")        # DBName
-
-cursor = db.cursor() # Cursor object for database query
-
-query = ("SELECT * FROM DATA "
-         "WHERE subject_identifier = %(s_ID)s AND (date BETWEEN %(start_DATE)s AND %(end_DATE)s)") #base query
-
-#Query for device states - change subject number to view other subjects
-query_modifications= {'s_ID': 1,'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
-    
-cursor.execute(query, query_modifications) #Process query with variable modifications
-queryreturn = cursor.fetchall() #Fetch all rows with defined query for first state
-
-
-
-
+subjectlist = [2]
+##Program Functions
+def query_updatevalue(key_to_find, definition):
+    for key in query_modifications.keys():
+        if key == key_to_find:
+           query_modifications[key] = definition
+           
 #Used to search for transitions in the dateset to identify timing:
-# First, 
-
 def transitionsearch(inputarray, mask):  #input array used for comparison and a mask of always
     results = []
     resultswithstart= []
@@ -111,6 +100,170 @@ def transitionsearch(inputarray, mask):  #input array used for comparison and a 
    
     return [resultswithstartandstop, deltaidle, deltaactive, deltacombined, deltaactiveOff, deltaactiveOn, results, resultswithstart]
 
+def savingsevaluation(inputarray, timersetting, simulatedPMSetting, PMSimulationOn):
+    savingsarray=[]
+
+    newlist=[int(x) for xs in inputarray for x in xs]
+    #print(newlist)
+    for index in range(0, (len(newlist))):
+        if ((PMSimulationOn == True)):  #no negative savings, for PMSimulation - Preconditioner and savings application - this applies a simulated power management to the data.
+            if (newlist[index] < simulatedPMSetting): #initial verification of values to prevent negative savings
+                if (newlist[index] < timersetting):  #no negative savings
+                        savingsval=0
+                        savingsarray.append(int(savingsval))
+            
+                else:
+                    savingsval = (newlist[index] - timersetting)
+                    savingsarray.append(int(savingsval))
+                
+        if ((PMSimulationOn == False)):  #no negative savings, for PMSimulation
+            if (newlist[index] < timersetting):  #no negative savings
+                savingsval=0
+                savingsarray.append(int(savingsval))
+            
+            else:
+                savingsval = (newlist[index] - timersetting)
+                savingsarray.append(int(savingsval))
+
+    return [savingsarray]
+            
+def pushsummarytodb(generatetable, table_name, subject_identifier, desktop_type, MPID, summary_idle_percent, delta_computer_W, delta_acessories_W, external_pm_control_min, invervention_setting_min, runtime_saved_min, projected_per_day_savings_kWh, weekday_only_estimate_kwhperyear, all_days_even_estimate_kwhperyear, weekday_and_weekends_estimate_kwhperyear, min_max_estimate_ratio):
+    entryData = []
+    if (generatetable == True):
+        cursor.execute("CREATE TABLE IF NOT EXISTS `summary` (  `subject_identifier` tinyint(4) DEFAULT NULL, `desktop_type` varchar(2) COLLATE utf8mb4_unicode_ci DEFAULT '', `MPID` tinyint(4) DEFAULT NULL, `summary_idle_percent` float DEFAULT NULL, `delta_computer_W` int(11) DEFAULT NULL, `delta_acessories_W` int(11) DEFAULT NULL, `external_pm_control_min` float DEFAULT NULL, `invervention_setting_min` float DEFAULT NULL, `runtime_saved_per_day_min` float DEFAULT NULL, `projected_per_day_savings_kWh` float DEFAULT NULL, `weekday_only_estimate_kwhperyear` float DEFAULT NULL, `all_days_even_estimate_kwhperyear` float DEFAULT NULL, `weekday_and_weekends_estimate_kwhperyear` float DEFAULT NULL, `min_max_estimate_ratio` float DEFAULT NULL, `update_time` datetime DEFAULT NULL) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;")
+        print("Not implemented: nothing to see here")
+      
+    #Assemble array to insert into DB
+    entryData.append (subject_identifier)
+    entryData.append (desktop_type)
+    entryData.append (MPID)
+    entryData.append (summary_idle_percent)
+    entryData.append (delta_computer_W)
+    entryData.append (delta_acessories_W)
+    entryData.append (external_pm_control_min)
+    entryData.append (invervention_setting_min)
+    entryData.append (runtime_saved_min)
+    entryData.append (projected_per_day_savings_kWh)
+    entryData.append (weekday_only_estimate_kwhperyear)
+    entryData.append (all_days_even_estimate_kwhperyear)
+    entryData.append (weekday_and_weekends_estimate_kwhperyear)
+    entryData.append (min_max_estimate_ratio)
+    entryData.append (str(datetime.now()))
+    print (str(entryData)) #print out contents of array to enter
+    #Insert the array by element into the DB
+    cursor.execute('''INSERT IGNORE INTO %s (subject_identifier, desktop_type, MPID, summary_idle_percent, delta_computer_W, delta_acessories_W, external_pm_control_min, invervention_setting_min, runtime_saved_per_day_min, projected_per_day_savings_kWh, weekday_only_estimate_kwhperyear, all_days_even_estimate_kwhperyear, weekday_and_weekends_estimate_kwhperyear, min_max_estimate_ratio, update_time) VALUES (%%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s, %%s)''' % table_name, (entryData))
+    db.commit()
+    print ("Records posted to DB - Total this session:")
+    global dbrecordpost  #need to make a reference to this global variable
+    dbrecordpost=dbrecordpost+1
+    print(dbrecordpost)
+    
+def savingsreporting(inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
+    deltawatt = activecomputerwatt - standbycomputerwatt
+    deltawattaccessories = activeaccessorieswatt - standbyaccessorieswatt 
+    if (accessorycontrol==False):
+        deltawattaccessories =  0
+    print()
+    print()
+    print(",,++++++++++++++++++++++++++++++++++++++++++++++++++++")
+    for x in analysisvalues:
+        print()
+        savingsarrayreturn = savingsevaluation (inputrange, x, simPMsavingsval,simPMsavingsOn)     
+        if (simPMsavingsOn == False):
+            simPMsavingsval = 0 #set to 0 if not enabled for reporting  
+        sys.stdout.write(",,Applied savings for intervention at ")
+        sys.stdout.write(str(x))
+        sys.stdout.write(" minutes:,")
+        sys.stdout.write(str(savingsarrayreturn))
+        print()
+        if (simPMsavingsOn ==True):
+            sys.stdout.write(",,Simulated Pre-PM Savings Applied at (min):,")
+            sys.stdout.write(str(simPMsavingsval))
+            print()
+        else:
+            sys.stdout.write(",,No Simulated Pre-PM Savings Applied, accordingly the setting is (min):,")
+            sys.stdout.write(str(0))
+            print()
+            
+        savingssum = 0 #Initialize the sum counter
+        for index in range(0, len(savingsarrayreturn)):
+            savingssum = savingssum + int(savingsarrayreturn[0][index])
+        sys.stdout.write(",,Total (min) Runtime Saved:,")
+        print(str(sum(savingsarrayreturn[0])))
+        perday= (sum(savingsarrayreturn[0])/averagebase)
+        sys.stdout.write(",,Per day (min) Runtime Saved:,")
+        print(str(perday))
+        sys.stdout.write(",,Per day (Hr) Runtime Saved:,")
+        print(str(perday/60))
+        if (energyreport == True):
+            runtimehr= perday/60
+            
+            sys.stdout.write(",,Projected per day Energy Saved considering a delta of ")
+            #calculations
+            sys.stdout.write(str(deltawatt))
+            Wcontacess = (((deltawatt+deltawattaccessories)/1000)*runtimehr)
+            sch1= (((deltawatt+deltawattaccessories)/1000)*runtimehr)*261
+            sch2 = (((deltawatt+deltawattaccessories)/1000)*runtimehr)*365
+            sch3 = ((((deltawatt+deltawattaccessories)/1000)*runtimehr)*261)+(104*24*(deltawatt/1000))
+            minMaxRatio = (sch1/(sch3+0.0000001))  #added value to avoid div by zero
+            minMidRatio = (sch1/(sch2+0.0000001))  #added value to avoid div by zero
+            midMaxRatio = (sch2/(sch3+0.0000001))  #added value to avoid div by zero
+            sys.stdout.write(" W and ")
+            sys.stdout.write(str(deltawattaccessories))
+            sys.stdout.write(" W controlled accessories ")
+            sys.stdout.write("-- presented in (kWh/day):, ")
+            sys.stdout.write(str(Wcontacess))
+            print()
+            sys.stdout.write(",,Weekday only (Weekends Off -- No Savings) Schedule Projected per Year Energy Saved (same W load) -- presented in (kWh/year):,")
+            sys.stdout.write(str(sch1))
+            print()
+            sys.stdout.write(",,Identical Schedule Projected per full Year Energy Saved (same W load) -- presented in (kWh/year):,")
+            sys.stdout.write(str(sch2))
+            print()
+            sys.stdout.write(",,Weekday and all Weekends -- Savings) Schedule Projected per Year Energy Saved (same W load) -- presented in (kWh/year):,")
+            sys.stdout.write(str(sch3))
+            print()
+            sys.stdout.write(",,Min-Max Estimate Ratio (min/max kWh) - reference value of .28 (for s equal weekend contribution):,")
+            sys.stdout.write(str(minMaxRatio))  #calculate ratio - add in a very small coefficient to avoid div by zero, value around 2.5 is expected based on ratio of weekdays to weekends assuming identical use
+            print()
+            sys.stdout.write(",,Min-Mid Estimate Ratio (min/mid kWh) - reference value of .28 (for s equal weekend contribution):,")
+            sys.stdout.write(str(minMidRatio))  #calculate ratio - add in a very small coefficient to avoid div by zero, value around 2.5 is expected based on ratio of weekdays to weekends assuming identical use
+            print()
+            sys.stdout.write(",,Mid-Max Estimate Ratio (mid/max kWh) - reference value of .28 (for s equal weekend contribution):,")
+            sys.stdout.write(str(midMaxRatio))  #calculate ratio - add in a very small coefficient to avoid div by zero, value around 2.5 is expected based on ratio of weekdays to weekends assuming identical use
+            print()
+        print (",,______________________________________________")
+        if (writetosummarydb == True):
+            pushsummarytodb(False, "summary", str(row[1]), str(row[2]), str(row[3]), str(perdayidleaverage), str(deltawatt), str(deltawattaccessories), str(simPMsavingsval), str(x), str(perday), str(Wcontacess), str(sch1), str(sch2), str(sch3), str(minMaxRatio)) #Push to DB, do not re-generate table
+        
+    print(",,**********************************************")
+
+#-----------------End of Functions---------------------
+
+      
+#Begin main program
+# Open database connection
+db = mysql.connector.connect(host="XXXXXX.calit2.uci.edu",    # host
+                     user="XXXXXXX",         # username
+                     passwd="XXXXXXXX",  # password
+                     db="VerdiemStudy")        # DBName
+
+cursor = db.cursor() # Cursor object for database query
+
+query = ("SELECT * FROM DATA "
+         "WHERE subject_identifier = %(s_ID)s AND (date BETWEEN %(start_DATE)s AND %(end_DATE)s)") #base query
+
+#Default Query for device states - change subject number to view other subjects
+query_modifications= {'s_ID': 1,'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
+#Leave this default alone in most use cases if the general query is unchanged, update the values by the function provided to perform a replacement on this dictionary object 
+
+
+query_updatevalue('s_ID', (1))  #Enter in the subject number here
+#print(query_modifications)  #Print for Debug, not CSV compliant
+    
+cursor.execute(query, query_modifications) #Process query with variable modifications
+queryreturn = cursor.fetchall() #Fetch all rows with defined query for first state
+
 #collect and display unique states in the query
 subjecttallylist = [] #total list of states found
 subjecttallylist_unique_list = []  # intitalize a null list
@@ -118,6 +271,7 @@ statetallylist = [] #total list of states found
 statetallylist_unique_list = [] #total list of states found
 datetallylist = []  #total list of dates found
 datetallylist_unique_list = []  #total list of dates found
+
 for rowindex, row in enumerate(queryreturn): #go thru query and generate a full list of states from the dataset
     statetallylist.append(row[stateposition])
     datetallylist.append(row[daterow])
@@ -140,20 +294,22 @@ for x in datetallylist:
         
         
 #Print out Headers for CSV
+print(",,Calculating Idle Time:")
 sys.stdout.write("Subject,Date,State/Info,")
-for x in range(0, (96*15)): #96 sets of 15 minute periods for all minutes in a 24 hour period
+
+for x in range(0, (totalperiods*periodlength)): #96 sets of 15 minute periods for all minutes in a 24 hour period
     timeholder = datetime.today() #initialize datetimeobject
     timeholder = (datetime.combine(date.today(), time(0,0,0)) + timedelta(minutes=1*x))
     if(elapsedminortime==False):
         sys.stdout.write(datetime.strftime(timeholder, '%H:%M:%S'))   
     else:
         sys.stdout.write(str(x))
-    if ((x<(96*15)-1)): #suppress final comma
+    if ((x<(totalperiods*periodlength)-1)): #suppress final comma
         sys.stdout.write(",")
 print () #print newline after the header row is finished
     
 
-for listeddate in datetallylist_unique_list: # display entries for a single date
+for listeddate in datetallylist_unique_list: # display entries for a single date, in the current design, for a single subject
     ontimelist = []
     activetimelist = []
     xorlist = []
@@ -387,7 +543,10 @@ print()
 print()
 print()
 print(",,===================================================")
-print(",,Subject Summary Analysis:")                
+print(",,Subject Summary Analysis:") 
+sys.stdout.write(",,Total study days considered in calculation where idle time was observed:,")
+print(resultsreviewcount)  
+print()             
 print(",,Delta (Idle) Summary across all days: ")
 sys.stdout.write(str(subjecttallylist_unique_list[0]))
 sys.stdout.write(',')
@@ -398,78 +557,33 @@ sys.stdout.write(',')
 sys.stdout.write(str(finaldeltalist))
 print()
 sys.stdout.write(",,Idle time average across all days:,")
-sys.stdout.write('{:.2%}'.format((idleaverage/resultsreviewcount)))
+perdayidleaverage = idleaverage/resultsreviewcount
+sys.stdout.write('{:.2%}'.format((perdayidleaverage)))
 print()
 
-def savingsevaluation(inputarray, timersetting):
-    savingsarray=[]
 
-    newlist=[int(x) for xs in inputarray for x in xs]
-    #print(newlist)
-    for index in range(0, (len(newlist))):
-        if (newlist[index] < timersetting):  #no negative savings
-            savingsval=0
-            savingsarray.append(int(savingsval))
-            
-        else:
-            savingsval = (newlist[index] - timersetting)
-            savingsarray.append(int(savingsval))
+#Run Evaluations
+#itteration parameters
+deltaWcomputerpower = [20, 30, 40, 50, 60, 80, 100, 120]
+standbycomputerwatt = [0]
+pmSettings = [5, 10, 15, 20, 30, 45, 60, 120]
 
-    return [savingsarray]
-            
 
-def savingsreporting(analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, energyreport):
-    deltawatt = activecomputerwatt - standbycomputerwatt
-    deltawattaccessories = activeaccessorieswatt - standbyaccessorieswatt 
-    if (accessorycontrol==False):
-        deltawattaccessories=0
-    print()
-    print()
-    print(",,++++++++++++++++++++++++++++++++++++++++++++++++++++")
-    for x in analysisvalues:
-        print()
-        savingsarrayreturn = savingsevaluation (finaldeltalist, x)     
-        sys.stdout.write(",,Applied savings for intervention at ")
-        sys.stdout.write(str(x))
-        sys.stdout.write(" minutes:,")
-        sys.stdout.write(str(savingsarrayreturn))
-        print()
-        savingssum = 0 #Initialize the sum counter
-        for index in range(0, len(savingsarrayreturn)):
-            savingssum = savingssum + int(savingsarrayreturn[0][index])
-        sys.stdout.write(",,Total (min) Runtime Saved:,")
-        print(str(sum(savingsarrayreturn[0])))
-        perday= (sum(savingsarrayreturn[0])/averagebase)
-        sys.stdout.write(",,Per day (min) Runtime Saved:,")
-        print(str(perday))
-        sys.stdout.write(",,Per day (Hr) Runtime Saved:,")
-        print(str(perday/60))
-        if (energyreport == True):
-            runtimehr= perday/60
-            sys.stdout.write(",,Projected per day Energy Saved considering a delta of ")
-            sys.stdout.write(str(deltawatt))
-            sys.stdout.write(" W and ")
-            sys.stdout.write(str(deltawattaccessories))
-            sys.stdout.write(" W controlled accessories ")
-            sys.stdout.write("-- presented in (kWh/day):, ")
-            sys.stdout.write(str(((deltawatt+deltawattaccessories)/1000)*runtimehr))
-            print()
-            sys.stdout.write(",,Weekday only (Weekends Off -- No Savings) Schedule Projected per Year Energy Saved (same W load) -- presented in (kWh/year):,")
-            sys.stdout.write(str((((deltawatt+deltawattaccessories)/1000)*runtimehr)*261))
-            print()
-            sys.stdout.write(",,Identical Schedule Projected per full Year Energy Saved (same W load) -- presented in (kWh/year):,")
-            sys.stdout.write(str((((deltawatt+deltawattaccessories)/1000)*runtimehr)*365))
-            print()
-            sys.stdout.write(",,Weekday and all Weekends -- Savings) Schedule Projected per Year Energy Saved (same W load) -- presented in (kWh/year):,")
-            sys.stdout.write(str(((((deltawatt+deltawattaccessories)/1000)*runtimehr)*261)+(104*24*(deltawatt/1000))))
-            print()
-            sys.stdout.write(",,Max-Min Estimate Ratio (max/min kWh):,")
-            sys.stdout.write(str((((((deltawatt+deltawattaccessories)/1000)*runtimehr)*261)+(104*24*(deltawatt/1000)))/((((deltawatt+deltawattaccessories)/1000)*runtimehr+.0000001)*261)))  #calculate ratio - add in a very small coefficient to avoid div by zero
-            print()
-        print (",,______________________________________________")
-        
-savingsreporting([5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,1,51,0,0,False,True) 
+#with no PM settings, no accessory control
+for i, value1 in enumerate(standbycomputerwatt):
+    for j, value2 in enumerate(deltaWcomputerpower):
+        savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,0,False,0,False,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
+
+
+#with PM settings, no accessory control
+for i, value1 in enumerate(standbycomputerwatt):
+    for j, value2 in enumerate(deltaWcomputerpower):
+        for k, value3 in enumerate(pmSettings):
+            savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,0,False,pmSettings[k],True,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
+
+
+print("Run Complete") 
 print() 
-   
+
 cursor.close()
 db.close()  #close DB connection

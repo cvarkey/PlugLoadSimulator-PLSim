@@ -22,11 +22,11 @@ supressdate = False #Dates must be suppressed for direct PLSim compliance, help 
 elapsedminortime = False #If true, display Elapsed minutes versus time
 annotatetransitions = True #Will display at the end of each line the number of transitions per row of data (in a given state) for CSV Formatting
 addedfields = True #If true, this will add all fields as in the order of the original dataset to the printout - works only for CSV
-blankheaders=True #Use to remove all header info above the text to be used in data of the state info - helpful when quick combining in a text editor
+blankheaders=False #Use to remove all header info above the text to be used in data of the state info - helpful when quick combining in a text editor
 # Open database connection
-db = mysql.connector.connect(host="XXXXXXXX.calit2.uci.edu",    # host
-                     user="XXXXXXXX",         # username
-                     passwd="XXXXXXXX",  # password
+db = mysql.connector.connect(host="xxxxxxxxx.calit2.uci.edu",    # host
+                     user="xxxxxx",         # username
+                     passwd="xxxxxxx",  # password
                      db="VerdiemStudy")        # DBName
 
 cursor = db.cursor() # Cursor object for database query
@@ -35,7 +35,7 @@ query = ("SELECT * FROM DATA "
          "WHERE subject_identifier = %(s_ID)s AND (date BETWEEN %(start_DATE)s AND %(end_DATE)s)") #base query
 
 #Query for device states
-query_modifications= {'s_ID': 18,'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
+query_modifications= {'s_ID': 1,'start_DATE': "2014-01-01",'end_DATE': "2014-12-31"} #query records updated by defined variables in dictionary, for device, start and end dates - alternatively use this style for datetime hire_start = datetime.date(1999, 1, 1), for date time printout: #for (first_name, last_name, hire_date) in cursor: print("{}, {} was hired on {:%d %b %Y}".format(last_name, first_name, hire_date))
     
 cursor.execute(query, query_modifications) #Process query with variable modifications
 queryreturn = cursor.fetchall() #Fetch all rows with defined query for first state
@@ -58,6 +58,15 @@ daterow = 7 #row that date information is placedin
 subjectrow = 1 #Row the subject info is in
 devicerow = 4 #Identify row for the device (CPU or USER) that is being reported on 
 #write the header for the output denoting the sample distinguisher info
+
+day_total_time_ON = [0, 0, 0, 0, 0, 0, 0]
+day_total_time_SLEEP = [0, 0, 0, 0, 0, 0, 0]
+day_total_time_Idle = [0, 0, 0, 0, 0, 0, 0]
+day_total_time_ALLNOTON = [0, 0, 0, 0, 0, 0, 0]
+day_Total_Time_Active = [0, 0, 0, 0, 0, 0, 0]
+day_Total_Time_Idle = [0, 0, 0, 0, 0, 0, 0]
+
+
 
 #collect and display unique states in the query
 subjecttallylist = [] #total list of states found
@@ -132,27 +141,27 @@ if (blankheaders==False):
 if (blankheaders==False):
     if (plsimcompliant == False and addedfields != True):
         sys.stdout.write("Date,Manufacturer,Device,State,")
-        for x in range(0, (96*15)): #96 sets of 15 minute periods for all minutes in a 24 hour period
+        for x in range(0, (totalperiods*periodlength)): #96 sets of 15 minute periods for all minutes in a 24 hour period
             timeholder = datetime.today() #initialize datetimeobject
             timeholder = (datetime.combine(date.today(), time(0,0,0)) + timedelta(minutes=1*x))
             if(elapsedminortime==False):
                 sys.stdout.write(datetime.strftime(timeholder, '%H:%M:%S'))   
             else:
                 sys.stdout.write(str(x))
-            if ((x<(96*15)-1)): #suppress final comma
+            if ((x<(totalperiods*periodlength)-1)): #suppress final comma
                 sys.stdout.write(",")
         print () #print newline after the header row is finished
 if (blankheaders==False):
     if (plsimcompliant == False and addedfields == True):    
         sys.stdout.write("record_id,subject_id,desktop_type,MPID, device, status, int_record, date, day_of_week,")
-        for x in range(0, (96*15)): #96 sets of 15 minute periods for all minutes in a 24 hour period
+        for x in range(0, (totalperiods*periodlength)): #96 sets of 15 minute periods for all minutes in a 24 hour period
             timeholder = datetime.today() #initialize datetimeobject
             timeholder = (datetime.combine(date.today(), time(0,0,0)) + timedelta(minutes=1*x))
             if(elapsedminortime==False):
                 sys.stdout.write(datetime.strftime(timeholder, '%H:%M:%S'))   
             else:
                 sys.stdout.write(str(x))
-            if ((x<(96*15)-1)): #suppress final comma
+            if ((x<(totalperiods*periodlength)-1)): #suppress final comma
                 sys.stdout.write(",")
         print () #print newline after the header row is finished
     
@@ -243,6 +252,30 @@ for rowindex, row in enumerate(queryreturn): #page thru all returned rows from q
                     sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
             #sys.stdout.write(' ') #add in a space to distinguish between blocks, can be removed as needed, very helpful to turn on in testing and verification
         
+        #Tablulate State Time per day
+        if ("On" in row[stateposition] and "Sunday" in row[day_of_weekrow]):
+            day_total_time_ON [0] = day_total_time_ON [0] + 1
+        
+        if ("On" in row[stateposition] and "Monday" in row[day_of_weekrow]):
+            day_total_time_ON [1] = day_total_time_ON [1] + 1
+            
+        if ("On" in row[stateposition] and "Tuesday" in row[day_of_weekrow]):
+            day_total_time_ON [2] = day_total_time_ON [2] + 1
+    
+        if ("On" in row[stateposition] and "Wednesday" in row[day_of_weekrow]):
+            day_total_time_ON [3] = day_total_time_ON [3] + 1
+            
+        if ("On" in row[stateposition] and "Thursday" in row[day_of_weekrow]):
+            day_total_time_ON [4] = day_total_time_ON [4] + 1
+            
+        if ("On" in row[stateposition] and "Friday" in row[day_of_weekrow]):
+            day_total_time_ON [5] = day_total_time_ON [5] + 1
+            
+        if ("On" in row[stateposition] and "Saturday" in row[day_of_weekrow]):
+            day_total_time_ON [6] = day_total_time_ON [6] + 1
+         
+        
+        
         i=i+1 #index the loop counter
     #if (lastdate != row[daterow].strftime("%B %d, %Y")): #reset the check array if we have moved on to a set of states on a new date
         #lastlengthinstate = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0], [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]] #Reset the state check array
@@ -256,5 +289,7 @@ for rowindex, row in enumerate(queryreturn): #page thru all returned rows from q
 
 #if logicerrorflag == 1:
     #print("WARNING: There may a a double operational state!!  Double check this data!")         
+print ("Day of the week totals for ON:")
+print(day_total_time_ON)
 cursor.close()
 db.close()  #close DB connection
