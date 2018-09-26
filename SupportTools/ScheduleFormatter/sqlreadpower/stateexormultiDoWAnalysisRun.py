@@ -46,7 +46,7 @@ resultsreviewcount = 0
 finaldeltalist =[] #holder for the total collected delta values across all days
 idleaverage = 0
 perdayidleaverage = 0
-minutebaseinday = 1425 #Time base for min in day, Verdiem based periods= 1425, alternatively 1440
+minutebaseinday = 1440 #Time base for min in day, Verdiem based periods= 1425 (minus one period), alternatively 1440
 
 subjectlist = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118]
 
@@ -648,17 +648,18 @@ for q, valuesubject in enumerate(subjectlist):
     print()
     
     
-    #Run Evaluations
-    #itteration parameters
+    #Run Evaluations - Iteration parameters
     #deltaWcomputerpower = [20, 30, 40, 50, 60, 80, 100, 120, 150]
     deltaWcomputerpower = [20, 40, 50, 100, 120]
     standbycomputerwatt = [0]
     #deltaWaccessoriespower = [5, 10, 20, 50, 100, 500]
     deltaWaccessoriespower = [5, 10 ,20]
     #pmSettings = [5, 10, 15, 20, 30, 45, 60, 120]
-    pmSettings = [5, 10, 15, 20, 30, 60, 120]
+    pmSettings = [5, 10, 15, 20, 30, 45, 60, 120]
+    
+    #Settings for formatting the output to be entered
     dowsetting = [0, 1, 2]  #All Days, week days only, weekends only
-    modifyoutputfordayanalysisoptions = [1,0]
+    modifyoutputfordayanalysisoptions = [1,0] #use the -1 tipoff notation for dowsetting values that are not 0, for a full run, use both and have a logic check supress illogical runs
     
     for w, valuew in enumerate(modifyoutputfordayanalysisoptions): 
         modifyoutputfordayanalysis = modifyoutputfordayanalysisoptions[w] #set the day of week analysis switch as a global variable. 
@@ -667,7 +668,7 @@ for q, valuesubject in enumerate(subjectlist):
             dayanalysis = dowsetting[q] #set the day of week analysis switch as a global variable. 
             #with no PM settings, no accessory control
             
-            if ((modifyoutputfordayanalysis == 1) or (modifyoutputfordayanalysis == 0 and (dayanalysis == 0))): #fixes a logical issue : # yes there is a logical issue that should be skipped when dowsetting !=0 and the modifyoutputfordayanalysisoptions = 1 or 2
+            if ((modifyoutputfordayanalysis == 1) or (modifyoutputfordayanalysis == 0 and (dayanalysis == 0))): #fixes a logical issue, avoids redundant runs: #prior -  yes there is a logical issue that should be skipped when dowsetting !=0 and the modifyoutputfordayanalysisoptions = 1 or 2
                 for i, value1 in enumerate(standbycomputerwatt):
                     for j, value2 in enumerate(deltaWcomputerpower):
                         savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,0,False,0,False,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
