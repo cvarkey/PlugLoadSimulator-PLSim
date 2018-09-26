@@ -294,9 +294,9 @@ def savingsreporting(inputrange, analysisvalues, averagebase, standbycomputerwat
         
 #Begin main program
 # Open database connection
-db = mysql.connector.connect(host="XXXXXX.calit2.uci.edu",    # host
-                     user="XXXXXXX",         # username
-                     passwd="XXXXXXX",  # password
+db = mysql.connector.connect(host="xxxxxx.calit2.uci.edu",    # host
+                     user="xxxxxxxx",         # username
+                     passwd="xxxxxxxx",  # password
                      db="VerdiemStudy")        # DBName
 
 cursor = db.cursor() # Cursor object for database query
@@ -403,7 +403,7 @@ for q, valuesubject in enumerate(subjectlist):
                 sys.stdout.write(row[daterow].strftime("%m/%d/%y")) # (INSERT "("%B %d, %Y")" after %d to have commas in name.  Print out the datetime for each record 
                 sys.stdout.write(",") #If record line date is not intended to be displayed, turn of this line also
                 sys.stdout.write(str(row[stateposition]))
-                sys.stdout.write(",") #If record line date is not intended to be displayed, turn of this line also
+                sys.stdout.write("  ,") #If record line date is not intended to be displayed, turn of this line also
                 for x in range(periodstartcolumn, periodstartcolumn+totalperiods): #page thru each of the data columns per the defined start and total number of these
                     #reverse order to take care of Idle Only entries
                     lengthnotinstate = int(row[x])  #This is used to read the value at the index each period: total the time active in the column
@@ -662,39 +662,41 @@ for q, valuesubject in enumerate(subjectlist):
     
     for w, valuew in enumerate(modifyoutputfordayanalysisoptions): 
         modifyoutputfordayanalysis = modifyoutputfordayanalysisoptions[w] #set the day of week analysis switch as a global variable. 
-        # yes there is a logical issue that should be skipped when dowsetting !=0 and the modifyoutputfordayanalysisoptions = 1 or 2
+        
         for q, valuek in enumerate(dowsetting):
             dayanalysis = dowsetting[q] #set the day of week analysis switch as a global variable. 
             #with no PM settings, no accessory control
-            for i, value1 in enumerate(standbycomputerwatt):
-                for j, value2 in enumerate(deltaWcomputerpower):
-                    savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,0,False,0,False,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
             
-            
-            #with no PM settings, accessory control
-            
-            for i, value1 in enumerate(standbycomputerwatt):
-                for j, value2 in enumerate(deltaWcomputerpower):
-                    for l, value3 in enumerate(deltaWaccessoriespower):
-                        savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,deltaWaccessoriespower[l],True,0,False,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
-            
-            
-            #with PM settings, no accessory control
-            for i, value1 in enumerate(standbycomputerwatt):
-                for j, value2 in enumerate(deltaWcomputerpower):
-                    for k, value3 in enumerate(pmSettings):
-                        savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,0,False,pmSettings[k],True,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
-            
-            
-            #with PM settings, accessory control
-            for i, value1 in enumerate(standbycomputerwatt):
-                for j, value2 in enumerate(deltaWcomputerpower):
-                    for k, value3 in enumerate(pmSettings):
-                            for l, value4 in enumerate(deltaWaccessoriespower):
-                                    savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,deltaWaccessoriespower[l],True,pmSettings[k],True,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
-            
+            if ((modifyoutputfordayanalysis == 1) or (modifyoutputfordayanalysis == 0 and (dayanalysis == 0))): #fixes a logical issue : # yes there is a logical issue that should be skipped when dowsetting !=0 and the modifyoutputfordayanalysisoptions = 1 or 2
+                for i, value1 in enumerate(standbycomputerwatt):
+                    for j, value2 in enumerate(deltaWcomputerpower):
+                        savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,0,False,0,False,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
+                
+                
+                #with no PM settings, accessory control
+                
+                for i, value1 in enumerate(standbycomputerwatt):
+                    for j, value2 in enumerate(deltaWcomputerpower):
+                        for l, value3 in enumerate(deltaWaccessoriespower):
+                            savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,deltaWaccessoriespower[l],True,0,False,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
+                
+                
+                #with PM settings, no accessory control
+                for i, value1 in enumerate(standbycomputerwatt):
+                    for j, value2 in enumerate(deltaWcomputerpower):
+                        for k, value3 in enumerate(pmSettings):
+                            savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,0,False,pmSettings[k],True,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
+                
+                
+                #with PM settings, accessory control
+                for i, value1 in enumerate(standbycomputerwatt):
+                    for j, value2 in enumerate(deltaWcomputerpower):
+                        for k, value3 in enumerate(pmSettings):
+                                for l, value4 in enumerate(deltaWaccessoriespower):
+                                        savingsreporting(finaldeltalist,[5,10,15,20,25,30,35,40,45,50,55,60,120,180,240,300],resultsreviewcount,standbycomputerwatt[i],deltaWcomputerpower[j],0,deltaWaccessoriespower[l],True,pmSettings[k],True,True) #Arguments are: (inputrange, analysisvalues, averagebase, standbycomputerwatt, activecomputerwatt, standbyaccessorieswatt, activeaccessorieswatt, accessorycontrol, simPMsavingsval, simPMsavingsOn, energyreport):
+                
         
-        
+            
     print("Run Segment Complete") 
     print() 
 print("Run Complete") 
