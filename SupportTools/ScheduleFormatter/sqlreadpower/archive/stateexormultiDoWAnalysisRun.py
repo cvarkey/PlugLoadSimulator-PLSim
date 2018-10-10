@@ -23,7 +23,7 @@ writetosummarydb = True #Option allows summary to be written to a summary table 
 dbrecordpost = 0  #counter for posted records
 dayanalysis = 0 #Evaluation for specific days of the week: 0 is all days, 1 is week days, 2 is weekends
 modifyoutputfordayanalysis = True
-forcecutday = True
+
 
 #Parameters for data entry
 periodlength=15  #assume a standard 15 min period length
@@ -57,7 +57,7 @@ def query_updatevalue(key_to_find, definition):
            query_modifications[key] = definition
            
 #Used to search for transitions in the dateset to identify timing:
-def transitionsearch(inputarray, mask, forcecutdaylocal):  #input array used for comparison and a mask of always
+def transitionsearch(inputarray, mask):  #input array used for comparison and a mask of always
     results = []
     resultswithstart= []
     resultswithstartandstop = []
@@ -83,7 +83,7 @@ def transitionsearch(inputarray, mask, forcecutdaylocal):  #input array used for
             
     resultswithstartandstop.extend(resultswithstart)
     
-    if (inputarray[len(inputarray)-2]==inputarray[len(inputarray)-1]):  #take care of the 0 case 
+    if (inputarray[len(inputarray)-2]==inputarray[len(inputarray)-1]):  #take care of the 0 case, change the last value to force an end of day transition 
         if (inputarray[len(inputarray)-1]==1):
             endval=0
             
@@ -106,47 +106,38 @@ def transitionsearch(inputarray, mask, forcecutdaylocal):  #input array used for
             deltaactive.append(resultswithstartandstop[x+1][0] - resultswithstartandstop[x][0])
         if (resultswithstartandstop[x][1] == 0 and mask[resultswithstartandstop[x][0]] == 1):    
             deltaactiveOn.append(resultswithstartandstop[x+1][0] - resultswithstartandstop[x][0])
- 
-    if (forcecutdaylocal == True):
-        if (len(deltaidle)==0):
-            deltaidle.append (len(inputarray)) # If the day is forced to be cut, this allows a value of all idle to be returned
-    
-        if (len(resultswithstartandstop)==0):
-            resultswithstartandstop.append (len(inputarray)) # If the day is forced to be cut, this allows a value of all idle to be returned
-       
-        if (len(resultswithstart)==0):
-            resultswithstart.append (len(inputarray)) # If the day is forced to be cut, this allows a value of all idle to be returned
-      
+            
     return [resultswithstartandstop, deltaidle, deltaactive, deltacombined, deltaactiveOff, deltaactiveOn, results, resultswithstart]
 
 def savingsevaluation(inputarray, timersetting, simulatedPMSetting, PMSimulationOn):
     savingsarray=[]
 
     newlist=[int(x) for xs in inputarray for x in xs]
-    print("Raw Idle List: ")
-    sys.stdout.write(str(newlist)) #To print entry values
+    sys.stdout.write("Raw Idle Times List: ")
+    print(str(newlist)) #To print entry values
     for index in range(0, (len(newlist))):
         if ((PMSimulationOn == True)):  #no negative savings, for PMSimulation - Preconditioner and savings application - this applies a simulated power management to the data.
             if (newlist[index] > simulatedPMSetting): #initial verification of values to prevent negative savings
-                if (newlist[index] < timersetting):  #no negative savings
+                newlist[index] = simulatedPMSetting #if the PM works, now only the time to this PM value is used
+                if (newlist[index] < timersetting):  #with PMSim On, verify check for no negative savings
                         savingsval=0
                         savingsarray.append(int(savingsval))
             
                 else:
-                    savingsval = (newlist[index] - timersetting)
+                    savingsval = (newlist[index] - timersetting) #if not negative, with PM on, apply savings
                     savingsarray.append(int(savingsval))
             else:  #where PM setting is larger than savings value
-                savingsval=0
+                savingsval=0  #no savings possible, PM catches the idle already
                 savingsarray.append(int(savingsval))
                 
                 
-        else:  # for PMSimulation in off state
-            if (newlist[index] < timersetting):  #no negative savings
+        else:  # for PMSimulation in OFF State
+            if (newlist[index] < timersetting):  #check to make sure no negative savings
                 savingsval=0
                 savingsarray.append(int(savingsval))
             
             else:
-                savingsval = (newlist[index] - timersetting)
+                savingsval = (newlist[index] - timersetting) #apply savings
                 savingsarray.append(int(savingsval))
 
     return [savingsarray]
@@ -242,18 +233,21 @@ def savingsreporting(inputrange, analysisvalues, averagebase, standbycomputerwat
             
             #This is a tip-off indicator 
             if (dayanalysis == 0 and modifyoutputfordayanalysis == True):  #All Days
+               #sch 2 passes - all days even avg
                sch1 = -1
                sch3 = -1
                minMaxRatio = 0
                minMidRatio = 0
                midMaxRatio = 0
             if (dayanalysis == 1 and modifyoutputfordayanalysis == True):  #Week Days
+               #sch 1 passes - weekdays only avg
                sch2 = -1
                sch3 = -1
                minMaxRatio = 0
                minMidRatio = 0
                midMaxRatio = 0
             if (dayanalysis == 2 and modifyoutputfordayanalysis == True):  #All Days
+               #sch4 passes as sch3 - weekend days only average
                sch3 = sch4
                sch2 = -1
                sch1 = -1
@@ -287,16 +281,16 @@ def savingsreporting(inputrange, analysisvalues, averagebase, standbycomputerwat
             print()
         print (",,______________________________________________")
         if (writetosummarydb == True):
-            pushsummarytodb(False, "summary3", str(row[1]), str(row[2]), str(row[3]), str(perdayidleaverage), str(deltawatt), str(deltawattaccessories), str(simPMsavingsval), str(x), str(perday), str(Wcontacess), str(sch1), str(sch2), str(sch3), str(minMaxRatio), str(minMidRatio), str(midMaxRatio)) #Push to DB, do not re-generate table
+            pushsummarytodb(False, "summary4", str(row[1]), str(row[2]), str(row[3]), str(perdayidleaverage), str(deltawatt), str(deltawattaccessories), str(simPMsavingsval), str(x), str(perday), str(Wcontacess), str(sch1), str(sch2), str(sch3), str(minMaxRatio), str(minMidRatio), str(midMaxRatio)) #Push to DB, do not re-generate table
         
     print(",,**********************************************")
 
         
 #Begin main program
 # Open database connection
-db = mysql.connector.connect(host="xxxxxx.calit2.uci.edu",    # host
-                     user="xxxxxxxx",         # username
-                     passwd="xxxxxxxx",  # password
+db = mysql.connector.connect(host="xxxxxxx.calit2.uci.edu",    # host
+                     user="cxxxxxxx",         # username
+                     passwd="xxxxxxx",  # password
                      db="VerdiemStudy")        # DBName
 
 cursor = db.cursor() # Cursor object for database query
@@ -371,12 +365,12 @@ for q, valuesubject in enumerate(subjectlist):
     for listeddate in datetallylist_unique_list: # display entries for a single date
         ontimelist = []
         activetimelist = []
+        idletimelist = []
         xorlist = []
         datecounted=0 #reset the single option check 
         for rowindex, row in enumerate(queryreturn): #page thru all returned rows from query, also return an index number related to the row
-            
             if ((('Active') in row[stateposition]) and (row[daterow] == listeddate)):
-                datecounted = row[daterow] #flag tripped for the counting fo this with active
+                datecounted = row[daterow] #flag tripped for the counting for this with active
                 sys.stdout.write(str(subjecttallylist_unique_list[0]))
                 sys.stdout.write(',')
                 sys.stdout.write(row[daterow].strftime("%m/%d/%y")) # (INSERT "("%B %d, %Y")" after %d to have commas in name.  Print out the datetime for each record 
@@ -392,11 +386,13 @@ for q, valuesubject in enumerate(subjectlist):
                         sys.stdout.write('1') #print out all rows for inspection
                         sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
                         activetimelist.append(1)
+                        idletimelist.append(0)
                         
                     for b in range(lengthnotinstate):
                         sys.stdout.write('0') #print out all rows for inspection
                         sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
                         activetimelist.append(0)
+                        idletimelist.append(1)
             if ((('Idle') in row[stateposition]) and (row[daterow] == listeddate) and (datecounted != row[daterow])):  #takes care of days where no idle happens and there is no entry
                 sys.stdout.write(str(subjecttallylist_unique_list[0]))
                 sys.stdout.write(',')
@@ -406,27 +402,28 @@ for q, valuesubject in enumerate(subjectlist):
                 sys.stdout.write("  ,") #If record line date is not intended to be displayed, turn of this line also
                 for x in range(periodstartcolumn, periodstartcolumn+totalperiods): #page thru each of the data columns per the defined start and total number of these
                     #reverse order to take care of Idle Only entries
-                    lengthnotinstate = int(row[x])  #This is used to read the value at the index each period: total the time active in the column
-                    lengthinstate = (periodlength-int(row[x])) #This is used to read the value at the index each period: assuming a known total, subtract to find the time not in the state - there would be multiple check under this for more defined states
+                    lengthnotinstate = int(row[x])  # - in reference to ON state - This is used to read the value at the index each period: total the time active in the column
+                    lengthinstate = (periodlength-int(row[x])) # - in reference to ON state - This is used to read the value at the index each period: assuming a known total, subtract to find the time not in the state - there would be multiple check under this for more defined states
                 #Identify Active/On state by string comparison - for CPU this is ON, for User this is Active
                             #need to identify this is an active state
-                    for a in range(lengthinstate):
-                        sys.stdout.write('1') #print out all rows for inspection
+                    for a in range(lengthinstate): #length in Active state in an Idle block
+                        sys.stdout.write('0') #print out all rows for inspection, double negative as printing for idle but referring to active
                         sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
-                        activetimelist.append(1)
+                        #activetimelist.append(1) - this may cause double counts and leaks with other unknown states
                         
-                    for b in range(lengthnotinstate):
-                        sys.stdout.write('0') #print out all rows for inspection
+                    for b in range(lengthnotinstate): #length not in Active state in an Idle block
+                        sys.stdout.write('1') #print out all rows for inspection, double negative as printing for idle but referring to active
                         sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
                         activetimelist.append(0)
+                        idletimelist.append(1)
             
                 if ((('Active') in row[stateposition]) and (row[daterow] == listeddate)):    
-                    #print ("Records: ")
+                    #print ("Active Records: ")
                     #print (len(activetimelist))  #print number of actions, helpful for debug
                     print() #Newline between rows - makes it formatted properly when there is final readout   
     
                 elif ((('Idle') in row[stateposition]) and (row[daterow] == listeddate)):
-                    #print ("Records: ")
+                    #print ("Idle/Not Active Records: ")
                     #print (len(activetimelist))  #print number of actions, helpful for debug
                     print() #Newline between rows - makes it formatted properly when there is final readout   
     
@@ -527,7 +524,7 @@ for q, valuesubject in enumerate(subjectlist):
             sys.stdout.write(listeddate.strftime("%m/%d/%y"))  
             sys.stdout.write(',') 
             returnresultsXORWaste=[]
-            returnresultsXORWaste = transitionsearch(xorwaste, activetimelist, forcecutday) #read back in transition points
+            returnresultsXORWaste = transitionsearch(xorwaste, activetimelist) #read back in transition points
             sys.stdout.write("Transition Points [Date Summary]:,")
             print(returnresultsXORWaste[0], sep=", ")
             sys.stdout.write(str(subjecttallylist_unique_list[0]))
@@ -603,7 +600,7 @@ for q, valuesubject in enumerate(subjectlist):
             print() #Newline between rows - makes it formatted properly when there is final readout   
             print() #Newline between rows - makes it formatted properly when there is final readout   
             print() #Newline between rows - makes it formatted properly when there is final readout   
-            resultsreviewcount+=1 #increment total results returned
+        resultsreviewcount+=1 #increment total results returned, for each listed date 
            
             #Logical State Determination - generic template (must be run per day)
             #temp1 = []
@@ -653,13 +650,13 @@ for q, valuesubject in enumerate(subjectlist):
     deltaWcomputerpower = [20, 40, 50, 100, 120]
     standbycomputerwatt = [0]
     #deltaWaccessoriespower = [5, 10, 20, 50, 100, 500]
-    deltaWaccessoriespower = [5, 10 ,20]
+    deltaWaccessoriespower = [5, 10, 20]
     #pmSettings = [5, 10, 15, 20, 30, 45, 60, 120]
     pmSettings = [5, 10, 15, 20, 30, 45, 60, 120]
     
     #Settings for formatting the output to be entered
     dowsetting = [0, 1, 2]  #All Days, week days only, weekends only
-    modifyoutputfordayanalysisoptions = [1,0] #use the -1 tipoff notation for dowsetting values that are not 0, for a full run, use both and have a logic check supress illogical runs
+    modifyoutputfordayanalysisoptions = [True,False] #use the -1 tipoff notation for dowsetting values that are not 0, for a full run, use both and have a logic check supress illogical runs
     
     for w, valuew in enumerate(modifyoutputfordayanalysisoptions): 
         modifyoutputfordayanalysis = modifyoutputfordayanalysisoptions[w] #set the day of week analysis switch as a global variable. 

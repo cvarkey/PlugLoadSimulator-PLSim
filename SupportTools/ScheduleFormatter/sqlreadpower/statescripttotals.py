@@ -145,9 +145,9 @@ def pushsummarytodb(generatetable, table_name, subject_identifier, desktop_type,
 #++++++++++++++++End of Functions+++++++++++++++++++++
 
 # Open database connection
-db = mysql.connector.connect(host="xxxxxxxx.calit2.uci.edu",    # host
-                     user="xxxxxx",         # username
-                     passwd="xxxxxxx",  # password
+db = mysql.connector.connect(host="xxxxx.calit2.uci.edu",    # host
+                     user="xxxxxxx",         # username
+                     passwd="xxxxxxxx",  # password
                      db="VerdiemStudy")        # DBName
 
 cursor = db.cursor() # Cursor object for database query
@@ -275,6 +275,7 @@ for q, valuesubject in enumerate(subjectlist):
         i=0 #loop counter for total range of time periods for a single row
         lastlengthinstate=row[periodstartcolumn] #initialize storage for the first state in the first period of the data
         for x in range(periodstartcolumn, periodstartcolumn+totalperiods): #page thru each of the data columns per the defined start and total number of these
+            print (x)
             lengthinstate = int(row[x])  #This is used to read the value at the index each period: total the time active in the column
             lengthnotinstate = (periodlength-int(row[x])) #This is used to read the value at the index each period: assuming a known total, subtract to find the time not in the state - there would be multiple check under this for more defined states
             #right now this logic is somewhat blind - there is a very rudimentary logic check for past states, there should be something here to make sure that there is no two states active at the same t
@@ -298,22 +299,14 @@ for q, valuesubject in enumerate(subjectlist):
                     if (plsimcompliant == False):
                         sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
                 for c in range(lengthinstate):
-                    
-                    #check for logic to see if there are two states active at onceS
-                    #if (lastlengthinstate[(x-periodstartcolumn)][lengthnotinstate+c] == 1):
-                        #logicerrorflag = 1
-                        #sys.stdout.write("There may be a problem at: ")
-                        #sys.stdout.write(str(rowindex)) #Print current spot in minute array index where 1 is written - this is good to keep on during testing
-                        #sys.stdout.write(",") #Print current row index where 1 is written - this is good to keep on during testing
-                        #print(a)
-                        
+                     
                     sys.stdout.write('1') #print out all rows for inspection
                     if (plsimcompliant == False):
                         sys.stdout.write(',') #Used when formatting a non-compliant PLSim CSV file
                 #sys.stdout.write(' ') #add in a space to distinguish between blocks, can be removed as needed, very helpful to turn on in testing and verification
             
             #Tablulate State Time per day - CPU States
-            #ON State
+            #ON State, (Note: idle+active)
             if ("On" in row[stateposition] and "CPU" in row[devicerow] and "Sunday" in row[day_of_weekrow]):
                 day_total_time_ON [0] = day_total_time_ON [0] + int(row[x])
             
