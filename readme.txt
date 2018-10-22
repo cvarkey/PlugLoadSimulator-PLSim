@@ -25,7 +25,7 @@ INSTALLATION DETAILS
 
 (2) In the command line, issue the following command
 		(a) conda install matplotlib (it will automatically install all the dependencies)- for reference: http://conda.pydata.org/docs/using/pkgs.html
-		(note: In Windows the "Anaconda Prompt" is available from the start menu, this points to the proper Python installation for Anaconda if multiple are present on your system and environmental variables for other installs are in place))
+		(note: In Windows the "Anaconda Prompt" is available from the start menu, this points to the proper Python installation for Anaconda if multiple are present on your system and environmental variables for other installs are in place))  RIN PIP and other package installers from this prompt to update components.
 
 (2) Download Java and then download Eclipse (if this is not on your computer already)
 	@ - https://eclipse.org/downloads/  [Tested in Photon Eclipse Java version] (Use the default install option of Java developers if prompted)
